@@ -10,7 +10,7 @@
 	<custom>
 		<fluidoSkin>
 			<gitHub>
-				<projectId>sentrysoftware/MYREPO</projectId>
+				<projectId>sentrysoftware/maven-skin-tools</projectId>
 				<ribbonOrientation>right</ribbonOrientation>
 				<ribbonColor>red</ribbonColor>
 			</gitHub>
@@ -20,7 +20,7 @@
 	<bannerLeft name="${project.name}" href="/index.html" />
 
 	<bannerRight href="https://sentrysoftware.com">
-		<image src="images/sentry-logo-179x75px.png" width="179" height="75" style="margin-right: 70px;"/>
+		<image src="images/sentry-logo-179x75px.png" width="179" height="75"/>
 	</bannerRight>
 
 	<publishDate position="right" />
@@ -28,7 +28,7 @@
 	<body>
 
 		<links>
-			<!-- <item name="First Link" href="https://sentrysoftware.com" /> -->
+			<item name="Sentry Maven Skin" href="https://sentrysoftware.github.io/maven-skin" />
 		</links>
 
 		<breadcrumbs>

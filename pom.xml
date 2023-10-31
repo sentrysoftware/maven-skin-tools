@@ -1,11 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.sentrysoftware</groupId>
-	<artifactId>MYARTIFACT</artifactId>
-	<name>MY PROJECT</name>
-	<version>0.1.00-SNAPSHOT</version>
-	<description>SOME DESCRIPTION</description>
+	<groupId>org.sentrysoftware.maven</groupId>
+	<artifactId>maven-skin-tools</artifactId>
+	<name>Sentry Maven Skin Tools</name>
+	<version>1.0.00-SNAPSHOT</version>
+	<description>Tools and utilities used in Sentry's Maven Skin. It is based on the excellent Maven
+		Reflow Skin developed by Andrius Velykis (http://andriusvelykis.github.io/reflow-maven-skin/).
+		However, because Reflow is no longer maintained, we had to fork the projet and go with our own!</description>
   <packaging>jar</packaging>
 
 	<organization>
@@ -13,8 +15,8 @@
 		<url>https://sentrysoftware.com</url>
 	</organization>
 
-	<url>https://github.com/sentrysoftware/MYREPO</url>
-	<inceptionYear>2023</inceptionYear>
+	<url>https://sentrysoftware.github.io/maven-skin-tools</url>
+	<inceptionYear>2017</inceptionYear>
 
 	<distributionManagement>
 		<snapshotRepository>
@@ -37,19 +39,19 @@
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/sentrysoftware/MYREPO/issues/</url>
+		<url>https://github.com/sentrysoftware/maven-skin-tools/issues/</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:https://github.com/sentrysoftware/MYREPO.git</connection>
-		<url>https://github.com/sentrysoftware/MYREPO</url>
+		<connection>scm:git:https://github.com/sentrysoftware/maven-skin-tools.git</connection>
+		<url>https://github.com/sentrysoftware/maven-skin-tools</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
 		<developer>
-			<name>MY NAME (@MY_ID)</name>
-			<email>MYNAME@sentrysoftware.com</email>
+			<name>Bertrand Martin (@bertysentry)</name>
+			<email>bertrand@sentrysoftware.com</email>
 			<roles>
 				<role>Project founder</role>
 			</roles>
@@ -95,6 +97,47 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-tools</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.doxia</groupId>
+			<artifactId>doxia-decoration-model</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js</artifactId>
+			<version>20.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js-scriptengine</artifactId>
+			<version>20.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sejda.imageio</groupId>
+			<artifactId>webp-imageio</artifactId>
+			<version>0.1.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -125,6 +168,27 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
+			</plugin>
+
+			<!-- https://issues.apache.org/jira/browse/DOXIASITETOOLS-168 tools.xml has to be at
+			META-INF/maven/site-tools.xml -->
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>copy-tools-xml</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<sourceFile>src/main/resources/tools.xml</sourceFile>
+							<destinationFile>${basedir}/target/classes/META-INF/maven/site-tools.xml</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- source -->
@@ -297,7 +361,7 @@
 
 	<profiles>
 
-			<!-- Profile for releasing the project -->
+		<!-- Profile for releasing the project -->
 		<profile>
 			<id>release</id>
 			<build>
