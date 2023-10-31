@@ -4,7 +4,7 @@
 	<groupId>org.sentrysoftware.maven</groupId>
 	<artifactId>maven-skin-tools</artifactId>
 	<name>Sentry Maven Skin Tools</name>
-	<version>1.0.00-SNAPSHOT</version>
+	<version>1.0.00</version>
 	<description>Tools and utilities used in Sentry's Maven Skin. It is based on the excellent Maven
 		Reflow Skin developed by Andrius Velykis (http://andriusvelykis.github.io/reflow-maven-skin/).
 		However, because Reflow is no longer maintained, we had to fork the projet and go with our own!</description>
@@ -45,7 +45,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/sentrysoftware/maven-skin-tools.git</connection>
 		<url>https://github.com/sentrysoftware/maven-skin-tools</url>
-		<tag>HEAD</tag>
+		<tag>v1.0.00</tag>
 	</scm>
 
 	<developers>
@@ -71,7 +71,7 @@
 
 		<!-- Reproducible Build -->
 		<!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-		<project.build.outputTimestamp>2023-10-25T22:28:48Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2023-10-31T16:11:06Z</project.build.outputTimestamp>
 	</properties>
 
 	<dependencyManagement>
