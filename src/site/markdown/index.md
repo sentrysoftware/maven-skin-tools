@@ -10,9 +10,9 @@ This artifact must be loaded as a dependency to the Maven Site plugin, as below:
   <artifactId>maven-site-plugin</artifactId>
   <dependencies>
     <dependency>
-      <groupId>com.sentrysoftware.doc</groupId>
-      <artifactId>sentry-skin-velocity-tools</artifactId>
-      <version>${sentrySkinVersion}</version>
+      <groupId>org.sentrysoftware.maven</groupId>
+      <artifactId>maven-skin-tools</artifactId>
+      <version>1.1.00</version>
     </dependency>
   </dependencies>
 </plugin>

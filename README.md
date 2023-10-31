@@ -1,34 +1,23 @@
-# oss-maven-template
+# Maven Skin Tools
 
-Repository template for all Sentry open-source Java projects, published on Maven Central.
+![GitHub release (with filter)](https://img.shields.io/github/v/release/sentrysoftware/maven-skin-tools)
+![Build](https://img.shields.io/github/actions/workflow/status/sentrysoftware/maven-skin-tools/deploy.yml)
+![GitHub top language](https://img.shields.io/github/languages/top/sentrysoftware/maven-skin-tools)
+![License](https://img.shields.io/github/license/sentrysoftware/maven-skin-tools)
 
-## Build instructions
+Velocity Tools used by the [Sentry Maven Skin](https://sentrysoftware.github.io/maven-skin).
 
-This is a simple Maven project. Build with:
+## Documentation
 
-```bash
-mvn verify
-```
+Visit the [Maven Skin Tools Documentation Site](https://sentrysoftware.github.io/maven-skin-tools).
 
-## Release instructions
+## Contributing
 
-The artifact is deployed to Sonatype's [Maven Central](https://central.sonatype.com/).
+A few rules:
 
-The actual repository URL is https://s01.oss.sonatype.org/, with server Id `ossrh` and requires credentials to deploy
-artifacts manually.
-
-But it is strongly recommended to only use [GitHub Actions "Release to Maven Central"](actions/workflows/release.yml) to perform a release:
-
-* Manually trigger the "Release" workflow
-* Specify the version being released and the next version number (SNAPSHOT)
-* Release the corresponding staging repository on [Sonatype's Nexus server](https://s01.oss.sonatype.org/)
-* Merge the PR that has been created to prepare the next version
-
-## License
-
-License is Apache-2. Each source file must include the Apache-2 header (build will fail otherwise).
-To update source files with the proper header, simply execute the below command:
-
-```bash
-mvn license:update-file-header
-```
+* Register an issue first to describe the bug or the proposed change
+* Fork the project
+* Create a `feature/...` branch with your changes
+* Create a Pull Request
+* Patiently wait for a code review and your changes to be merged
+* Patiently wait for a new version to be released
