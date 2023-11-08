@@ -642,13 +642,12 @@ public class HtmlTool extends SafeConfig {
 	 * Regex that matches with leading and trailing dashes
 	 */
 	private static final Pattern LEADING_TRAILING_DASHES = Pattern.compile("^-+|-+$");
-	
+
 	/**
 	 * Creates a slug (latin text with no whitespace or other symbols) for a longer text (i.e. to
 	 * use in URLs). Uses "-" as a word separator.
 	 *
-	 * @param input
-	 * @param separator
+	 * @param input The string (free) to be transformed into a valid element ID
 	 * @return the proper slug
 	 */
 	public static String slug(String input) {
