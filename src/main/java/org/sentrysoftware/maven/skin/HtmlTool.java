@@ -337,6 +337,37 @@ public class HtmlTool extends SafeConfig {
 	}
 
 	/**
+	 * Replace selected elements with specified elements in the given HTML.
+	 *
+	 * @param body
+	 *            HTML content to modify
+	 * @param selector
+	 *            CSS selector for elements that will get the appendice
+	 * @param replaceHtml
+	 *            HTML to append to the selected elements
+	 * @param amount
+	 *            Maximum number of elements to modify (-1 for unlimited)
+	 * @return HTML content with modified elements. If no elements are found, the original content
+	 *         is returned.
+	 */
+	public Element replace(Element body, String selector, String replaceHtml, int amount) {
+
+		List<Element> elements = body.select(selector);
+		if (amount >= 0) {
+			// limit to the indicated amount
+			elements = elements.subList(0, Math.min(amount, elements.size()));
+		}
+
+		for (Element element : elements) {
+			element.before(replaceHtml).remove();
+		}
+
+		return body;
+
+	}
+
+
+	/**
 	 * Retrieves text content of the selected elements in HTML. Renders the element's text as it
 	 * would be displayed on the web page (including its children).
 	 *
@@ -504,16 +535,19 @@ public class HtmlTool extends SafeConfig {
 			String headingText = heading.text();
 
 			// Create an ID out of it (trim all unwanted chars)
-			String headingSlug = slugLowerCase(headingText);
+			String headingSlug = slug(headingText);
 			if (headingSlug.length() > 50) {
 				headingSlug = headingSlug.substring(0, 50);
 			}
 
 			// If the ID already exists, add an increasing number to it
-			ids.merge(headingSlug, 0, (id, n) -> n + 1);
+			int slugNumber = ids.merge(headingSlug, 1, (oldValue, newValue) -> oldValue + 1);
 
 			// Set the ID attribute with slug_number
-			heading.attr("id", headingSlug + "_" + ids.getOrDefault(headingSlug, 0));
+			if (slugNumber > 1) {
+				headingSlug = headingSlug + "_" + slugNumber;
+			}
+			heading.attr("id", headingSlug);
 		}
 
 		return body;
@@ -595,39 +629,33 @@ public class HtmlTool extends SafeConfig {
 
 
 	/**
-	 * Regex that matches with all non-latin chars
+	 * Regex that matches with all non-latin chars... and dash
 	 */
 	private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
 
 	/**
-	 * Regex that matches with all white spaces
+	 * Regex that matches with all white spaces and other common word separators
 	 */
-	private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+	private static final Pattern WORD_SEPARATORS = Pattern.compile("[\\s_'()\\[\\]{}/\\|+=*,;:\\.]+");
 
 	/**
-	 * Same as {@link #slug(String)} but in lower case
-	 *
-	 * @param input
-	 *            text to generate the slug from
-	 * @return the slug of the given text that contains alphanumeric symbols and "-" only
-	 * @since 1.0
+	 * Regex that matches with leading and trailing dashes
 	 */
-	public static String slugLowerCase(String input) {
-		return slug(input).toLowerCase();
-	}
-
+	private static final Pattern LEADING_TRAILING_DASHES = Pattern.compile("^-+|-+$");
+	
 	/**
 	 * Creates a slug (latin text with no whitespace or other symbols) for a longer text (i.e. to
-	 * use in URLs). Uses "-" as a whitespace separator.
+	 * use in URLs). Uses "-" as a word separator.
 	 *
 	 * @param input
 	 * @param separator
-	 * @return
+	 * @return the proper slug
 	 */
-	private static String slug(String input) {
-		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
-		return NONLATIN.matcher(normalized).replaceAll("");
+	public static String slug(String input) {
+		String normalized = Normalizer.normalize(input, Form.NFD);
+		String nowhitespace = WORD_SEPARATORS.matcher(normalized).replaceAll("-");
+		String noSpecialChars = NONLATIN.matcher(nowhitespace).replaceAll("");
+		return LEADING_TRAILING_DASHES.matcher(noSpecialChars).replaceAll("").toLowerCase();
 	}
 
 	/**
