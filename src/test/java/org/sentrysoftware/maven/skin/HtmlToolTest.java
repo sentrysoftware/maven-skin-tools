@@ -55,6 +55,22 @@ class HtmlToolTest {
 		String result = trimWhites(HTML_TOOL.prepend(HTML_ELEMENT.clone(), "div.my-class", "<ol>Test</ol>", 1));
 		assertTrue(result.contains("<divclass=\"my-class\"><ol>Test</ol>"));
 	}
+	
+	@Test
+	void testReplace() {
+		{
+			// Replace all
+			String result = trimWhites(HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", -1));
+			assertTrue(result.contains("<spanclass=\"my-input\"></span>"));
+			assertFalse(result.contains("<input"));
+		}
+		{
+			// Replace just one (there will be 1 remaining <input>)
+			String result = trimWhites(HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", 1));
+			assertTrue(result.contains("<spanclass=\"my-input\"></span>"));
+			assertTrue(result.contains("<input"));
+		}
+	}
 
 	@Test
 	void testWrap() {
@@ -65,24 +81,24 @@ class HtmlToolTest {
 	@Test
 	void testEnsureHeadingIds() {
 		String result = trimWhites(HTML_TOOL.ensureHeadingIds(AGENT_HTML_ELEMENT.clone()));
-		assertTrue(result.contains("<h1id=\"configuring-the-agent_0\">"));
-		assertTrue(result.contains("<h2id=\"managing-user-access-rights-access-control-list_0\">"));
+		assertTrue(result.contains("<h1id=\"configuring-the-agent\">"));
+		assertTrue(result.contains("<h2id=\"managing-user-access-rights-access-control-list\">"));
 
-		result = trimWhites(HTML_TOOL.ensureHeadingIds(HTML_TOOL.parseContent("<h3>test</h3><h4>Test</h4>")));
-		assertEquals("<h3id=\"test_0\">test</h3><h4id=\"test_1\">Test</h4>", result);
+		result = trimWhites(HTML_TOOL.ensureHeadingIds(HTML_TOOL.parseContent("<h3>test</h3><h4>Test</h4><h4>Test</h4>")));
+		assertEquals("<h3id=\"test\">test</h3><h4id=\"test_2\">Test</h4><h4id=\"test_3\">Test</h4>", result);
 
 		result = trimWhites(HTML_TOOL.ensureHeadingIds(HTML_TOOL.parseContent("<h3>abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>")));
-		assertEquals("<h3id=\"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx_0\">abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>", result);
+		assertEquals("<h3id=\"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx\">abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>", result);
 
 	}
 
 	@Test
 	void testFixIds() {
 		String result = trimWhites(HTML_TOOL.fixIds(AGENT_HTML_ELEMENT.clone()));
-		assertTrue(result.contains("<ahref=\"#Managing_User_Access_Rights_28Access_Control_List29\">"));
+		assertTrue(result.contains("<ahref=\"#managing-user-access-rights-28access-control-list-29\">"));
 
 		result = trimWhites(HTML_TOOL.fixIds(HTML_TOOL.parseContent("<div id=\"bad.id\"></div>")));
-		assertEquals("<divid=\"badid\"></div>", result);
+		assertEquals("<divid=\"bad-id\"></div>", result);
 	}
 
 	@Test
@@ -147,6 +163,18 @@ class HtmlToolTest {
 	void testfixProtocolRelativeUrls() {
 		String result = trimWhites(HTML_TOOL.fixProtocolRelativeUrls(AGENT_HTML_ELEMENT.clone()));
 		assertFalse(result.contains("\"//"), "Protocol-relative URLs must have been fixed");
+	}
+	
+	@Test
+	void testSlug() {
+		assertEquals("id", HtmlTool.slug("id"));
+		assertEquals("i-d", HtmlTool.slug("i.d"));
+		assertEquals("i-d", HtmlTool.slug("I_D"));
+		assertEquals("id9", HtmlTool.slug("id9"));
+		assertEquals("id-id", HtmlTool.slug("id./id"));
+		assertEquals("id-test", HtmlTool.slug("/id/test/"));
+		assertEquals("idee", HtmlTool.slug("idée"));		
+		assertEquals("idee-qu-elle-est-bonne", HtmlTool.slug("idée qu'elle est bonne"));
 	}
 
 	/**
