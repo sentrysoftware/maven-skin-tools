@@ -151,7 +151,7 @@
 			<!-- compiler -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.12.1</version>
 			</plugin>
 
 			<!-- https://issues.apache.org/jira/browse/DOXIASITETOOLS-168 tools.xml has to be at
