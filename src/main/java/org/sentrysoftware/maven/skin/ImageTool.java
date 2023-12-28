@@ -119,6 +119,11 @@ public class ImageTool {
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
 
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get the parent path of " + currentDocument);
+		}
+		
 		// Select all images
 		List<Element> elements = body.select("img");
 
@@ -147,7 +152,7 @@ public class ImageTool {
 
 			// Recalculate the relative link and see whether the original matches
 			// the recalculated one. If not, it means there is a problem in the case.
-			Path recalculatedPath = documentPath.getParent().toRealPath().relativize(sourcePath.toRealPath());
+			Path recalculatedPath = parentPath.toRealPath().relativize(sourcePath.toRealPath());
 			String sourcePathSlashString = sourcePath.toString().replace('\\', '/');
 			String recalculatedPathSlashString = recalculatedPath.toString().replace('\\', '/');
 			if (!recalculatedPathSlashString.endsWith(sourcePathSlashString) && !sourcePathSlashString.endsWith(recalculatedPathSlashString)) {
@@ -344,6 +349,11 @@ public class ImageTool {
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
 
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get parent path of " + currentDocument);
+		}
+
 		// Select all images
 		List<Element> elements = body.select(selector);
 
@@ -382,7 +392,7 @@ public class ImageTool {
 			}
 
 			// Calculate the src path of the webp image
-			String webpSrc = documentPath.getParent().relativize(webpFile.toPath()).toString().replace('\\', '/');
+			String webpSrc = parentPath.relativize(webpFile.toPath()).toString().replace('\\', '/');
 
 			// Now wrap the IMG element with <picture> and <source srcset="...webp">
 			element
@@ -531,6 +541,11 @@ public class ImageTool {
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
 
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get parent path of " + currentDocument);
+		}
+
 		// Select all images
 		List<Element> elements = body.select(selector);
 
@@ -579,7 +594,7 @@ public class ImageTool {
 			int thumbnailHeight = thumbnailImage.getHeight();
 
 			// Calculate the src path of the webp image
-			String thumbnailSrc = documentPath.getParent().relativize(thumbnailFile.toPath()).toString().replace('\\', '/');
+			String thumbnailSrc = parentPath.relativize(thumbnailFile.toPath()).toString().replace('\\', '/');
 
 			// Replace macros in the wrap template
 			String wrapHtml = wrapTemplate
