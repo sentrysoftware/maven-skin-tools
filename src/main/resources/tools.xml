@@ -3,11 +3,15 @@
 	The tools.xml file is included in the classpath and Velocity finds it. -->
 <tools>
 	<toolbox scope="application">
-		<tool key="htmlTool"
-			class="org.sentrysoftware.maven.skin.HtmlTool" />
-		<tool key="indexTool"
-			class="org.sentrysoftware.maven.skin.IndexTool" />
-		<tool key="imageTool"
-			class="org.sentrysoftware.maven.skin.ImageTool" />
+		<tool key="htmlTool" class="org.sentrysoftware.maven.skin.HtmlTool" />
+		<tool key="indexTool" class="org.sentrysoftware.maven.skin.IndexTool" />
+		<tool key="imageTool" class="org.sentrysoftware.maven.skin.ImageTool" />
+
+		<!-- Additional Velocity Tools -->
+		<!-- Tools available in https://velocity.apache.org/tools/3.1/tools-summary.html -->
+		<!-- But not listed in https://maven.apache.org/doxia/doxia-sitetools/doxia-site-renderer/ -->
+		<tool key="collection" class="org.apache.velocity.tools.generic.CollectionTool" />
+		<tool key="json" class="org.apache.velocity.tools.generic.JsonTool" />
+		<tool key="log" class="org.apache.velocity.tools.generic.LogTool" />
 	</toolbox>
 </tools>
