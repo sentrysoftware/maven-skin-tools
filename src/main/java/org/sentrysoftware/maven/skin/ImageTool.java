@@ -72,6 +72,13 @@ public class ImageTool {
 	private static final Pattern ABSOLUTE_URL_PATTERN = Pattern.compile("^(?:[a-z]+:)?//", Pattern.CASE_INSENSITIVE);
 
 	/**
+	 * Create a new instance
+	 */
+	public ImageTool() {
+		/* Do nothing */
+	}
+
+	/**
 	 * Returns whether specified path is absolute or not.
 	 * <ul>
 	 * <li>http://google.com => absolute

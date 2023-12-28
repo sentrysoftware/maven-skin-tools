@@ -1,39 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<site name="${project.name}">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name}">
 
 	<skin>
-		<groupId>org.apache.maven.skins</groupId>
-		<artifactId>maven-fluido-skin</artifactId>
-		<version>2.0.0-M8</version>
+		<groupId>org.sentrysoftware.maven</groupId>
+		<artifactId>sentry-maven-skin</artifactId>
+		<version>6.2.00</version>
 	</skin>
 
+	<bannerLeft>
+		<src>images/sentry-logo-114x40-white.png</src>
+		<href>https://sentrysoftware.org</href>
+	</bannerLeft>
+
 	<custom>
-		<fluidoSkin>
-			<gitHub>
-				<projectId>sentrysoftware/maven-skin-tools</projectId>
-				<ribbonOrientation>right</ribbonOrientation>
-				<ribbonColor>red</ribbonColor>
-			</gitHub>
-		</fluidoSkin>
+		<keywords>open source,oss</keywords>
 	</custom>
-
-	<bannerLeft name="${project.name}" href="/index.html" />
-
-	<bannerRight href="https://sentrysoftware.com">
-		<image src="images/sentry-logo-179x75px.png" width="179" height="75"/>
-	</bannerRight>
-
-	<publishDate position="right" />
 
 	<body>
 
 		<links>
+			<item name="Fork on GitHub" href="${project.scm.url}" />
 			<item name="Sentry Maven Skin" href="https://sentrysoftware.github.io/maven-skin" />
 		</links>
-
-		<breadcrumbs>
-			<!-- <item name="Home" href="/" /> -->
-		</breadcrumbs>
 
 		<menu name="User Documentation">
 			<item name="Getting Started" href="index.html" />
@@ -42,4 +30,4 @@
 		<menu ref="reports" />
 	</body>
 
-</site>
+</project>
