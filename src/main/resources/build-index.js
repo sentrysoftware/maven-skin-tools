@@ -1,7 +1,7 @@
 /**
  * addDocumentToElasticLunr
  **/
-var addDocumentToElasticLunr = function(indexJson, id, title, keywords, body) {
+(function(indexJson, id, title, keywords, body) {
 
 	var idx;
 
@@ -35,4 +35,4 @@ var addDocumentToElasticLunr = function(indexJson, id, title, keywords, body) {
 	// Return the JSON-serialized index
 	return JSON.stringify(idx);
 
-}
+})
