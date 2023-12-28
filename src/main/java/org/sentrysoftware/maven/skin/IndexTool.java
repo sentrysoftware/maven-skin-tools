@@ -21,19 +21,18 @@ package org.sentrysoftware.maven.skin;
  */
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.velocity.tools.config.DefaultKey;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Value;
 
 /**
  * indexTool is a reference-able in a Velocity template.
@@ -56,26 +55,34 @@ public class IndexTool {
 	 */
 	static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 
-	/**
-	 * GraalVM's graal.js engine to execute Javascript
-	 */
-	static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("graal.js");
+    private static final Value addDocumentFunction;
 
-	static {
+    static {
 
-		try {
-			// Load elasticlunr (http://elasticlunr.com/)
-			engine.eval(new InputStreamReader(IndexTool.class.getResourceAsStream("/elasticlunr.min.js")));
+    	// Graal context
+    	final Context graalContext = Context.newBuilder("js")
+        		.allowAllAccess(true)
+        		.option("engine.WarnInterpreterOnly", "false")
+        		.build();
+    	
+    	Value tempFunction;
+    	
+        try {
 
-			// Load our own JS script
-			engine.eval(new InputStreamReader(IndexTool.class.getResourceAsStream("/build-index.js")));
+            // Load elasticlunr (http://elasticlunr.com/)
+            graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
 
-		} catch (ScriptException e) {
-			// What can we do in a static statement to handle exceptions? Not much...
-		}
+            // Load our own JS script
+            tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
 
+        } catch (IOException | PolyglotException e) { 
+        	/* Can't do much about it here */
+        	tempFunction = null;
+        }
+        
+        addDocumentFunction = tempFunction;
+    }
 
-	}
 
 	/**
 	 * Builds and update the specified elasticlunr.js index.
@@ -105,6 +112,10 @@ public class IndexTool {
 	 */
 	public static synchronized void buildElasticLunrIndex(String indexPathString, String id, String title, String keywords, String body) throws IOException, ScriptException, NoSuchMethodException {
 
+		if (addDocumentFunction == null) {
+			return;
+		}
+		
 		// Read the index file, if any
 		String indexJson;
 		Path indexPath = Paths.get(indexPathString);
@@ -115,8 +126,7 @@ public class IndexTool {
 		}
 
 		// Call our Javascript function
-		Invocable invocable = (Invocable)engine;
-		String result = (String)invocable.invokeFunction("addDocumentToElasticLunr", indexJson, id, title, keywords, body);
+        String result = addDocumentFunction.execute(indexJson, id, title, keywords, body).asString();
 
 		// Write the result
 		Files.write(indexPath, result.getBytes(UTF8_CHARSET));
