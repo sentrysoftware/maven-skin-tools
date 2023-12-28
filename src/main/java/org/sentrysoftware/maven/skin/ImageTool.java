@@ -123,7 +123,7 @@ public class ImageTool {
 		if (parentPath == null) {
 			throw new IOException("Couldn't get the parent path of " + currentDocument);
 		}
-		
+
 		// Select all images
 		List<Element> elements = body.select("img");
 
@@ -603,8 +603,7 @@ public class ImageTool {
 				.replaceAll("%thumbWidth%", String.valueOf(thumbnailWidth))
 				.replaceAll("%thumbHeight%", String.valueOf(thumbnailHeight))
 				.replaceAll("%thumbSrc%", thumbnailSrc)
-				.replaceAll("%imgAlt%", imageAlt)
-			;
+				.replaceAll("%imgAlt%", imageAlt);
 
 			// Now wrap the IMG element with template
 			// If the IMG element is inside a PICTURE element, wrap the PICTURE element

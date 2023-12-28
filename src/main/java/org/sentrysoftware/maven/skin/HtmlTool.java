@@ -62,7 +62,7 @@ public class HtmlTool extends SafeConfig {
 
 
 	private String outputEncoding = "UTF-8";
-	
+
 	/**
 	 * Create a new instance
 	 */

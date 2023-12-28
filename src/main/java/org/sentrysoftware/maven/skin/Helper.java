@@ -43,7 +43,7 @@ public class Helper {
 	private Helper() {
 		/* Do nothing */
 	}
-	
+
 	/**
 	 * Write a text file using System.lineSeparator()
 	 *
@@ -107,22 +107,22 @@ public class Helper {
 	public static long getLastModifiedTime(String filePathString) {
 		return getLastModifiedTime(Paths.get(filePathString));
 	}
-	
-    /**
-     * Reads the content of a resource file and returns it as a String.
-     *
-     * @param resourcePath The path to the resource file
-     * @return The content of the resource file as a String
-     * @throws IOException If an I/O error occurs
-     */
-    public static String readResourceAsString(String resourcePath) throws IOException {
-        try (InputStream inputStream = Helper.class.getResourceAsStream(resourcePath)) {
-            if (inputStream == null) {
-                throw new IOException("Resource not found: " + resourcePath);
-            }
-            byte[] bytes = inputStream.readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        }
-    }
+
+		/**
+		 * Reads the content of a resource file and returns it as a String.
+		 *
+		 * @param resourcePath The path to the resource file
+		 * @return The content of the resource file as a String
+		 * @throws IOException If an I/O error occurs
+		 */
+		public static String readResourceAsString(String resourcePath) throws IOException {
+				try (InputStream inputStream = Helper.class.getResourceAsStream(resourcePath)) {
+						if (inputStream == null) {
+								throw new IOException("Resource not found: " + resourcePath);
+						}
+						byte[] bytes = inputStream.readAllBytes();
+						return new String(bytes, StandardCharsets.UTF_8);
+				}
+		}
 
 }

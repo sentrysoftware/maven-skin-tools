@@ -49,39 +49,39 @@ public class IndexTool {
 	public IndexTool() {
 		/* Do nothing */
 	}
-	
+
 	/**
 	 * UTF-8 Charset
 	 */
 	static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 
-    private static final Value addDocumentFunction;
+		private static final Value addDocumentFunction;
 
-    static {
+		static {
 
-    	// Graal context
-    	final Context graalContext = Context.newBuilder("js")
-        		.allowAllAccess(true)
-        		.option("engine.WarnInterpreterOnly", "false")
-        		.build();
-    	
-    	Value tempFunction;
-    	
-        try {
+			// Graal context
+			final Context graalContext = Context.newBuilder("js")
+						.allowAllAccess(true)
+						.option("engine.WarnInterpreterOnly", "false")
+						.build();
 
-            // Load elasticlunr (http://elasticlunr.com/)
-            graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
+			Value tempFunction;
 
-            // Load our own JS script
-            tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
+				try {
 
-        } catch (IOException | PolyglotException e) { 
-        	/* Can't do much about it here */
-        	tempFunction = null;
-        }
-        
-        addDocumentFunction = tempFunction;
-    }
+						// Load elasticlunr (http://elasticlunr.com/)
+						graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
+
+						// Load our own JS script
+						tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
+
+				} catch (IOException | PolyglotException e) {
+					/* Can't do much about it here */
+					tempFunction = null;
+				}
+
+				addDocumentFunction = tempFunction;
+		}
 
 
 	/**
@@ -115,7 +115,7 @@ public class IndexTool {
 		if (addDocumentFunction == null) {
 			return;
 		}
-		
+
 		// Read the index file, if any
 		String indexJson;
 		Path indexPath = Paths.get(indexPathString);
@@ -126,7 +126,7 @@ public class IndexTool {
 		}
 
 		// Call our Javascript function
-        String result = addDocumentFunction.execute(indexJson, id, title, keywords, body).asString();
+				String result = addDocumentFunction.execute(indexJson, id, title, keywords, body).asString();
 
 		// Write the result
 		Files.write(indexPath, result.getBytes(UTF8_CHARSET));
