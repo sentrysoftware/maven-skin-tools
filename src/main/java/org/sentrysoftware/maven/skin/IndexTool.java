@@ -45,6 +45,13 @@ import org.apache.velocity.tools.config.DefaultKey;
 public class IndexTool {
 
 	/**
+	 * Creates a new instance
+	 */
+	public IndexTool() {
+		/* Do nothing */
+	}
+	
+	/**
 	 * UTF-8 Charset
 	 */
 	static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;

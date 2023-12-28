@@ -38,6 +38,10 @@ import java.nio.file.Paths;
  */
 public class Helper {
 
+	private Helper() {
+		/* Do nothing */
+	}
+	
 	/**
 	 * Write a text file using System.lineSeparator()
 	 *
