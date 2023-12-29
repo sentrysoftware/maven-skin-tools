@@ -25,12 +25,15 @@ class IndexToolTest {
 		HtmlTool htmlTool = new HtmlTool();
 		String studioAgentText = htmlTool.text(htmlTool.parseContent(studioAgentBody), "body").get(0);
 
+		// Get a new IndexTool
+		IndexTool indexTool = new IndexTool();
+		
 		// Add it to the index, twice! (it's supposed to be updated properly and the page present only once)
-		IndexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText + " dragon");
-		IndexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText);
+		indexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText + " dragon");
+		indexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText);
 
 		// And now add another fake entry
-		IndexTool.buildElasticLunrIndex(indexPath.toString(), "fake.html", "Fake", "fake", "This is a fake test.");
+		indexTool.buildElasticLunrIndex(indexPath.toString(), "fake.html", "Fake", "fake", "This is a fake test.");
 
 		String indexContent = new String(Files.readAllBytes(indexPath), "UTF-8");
 

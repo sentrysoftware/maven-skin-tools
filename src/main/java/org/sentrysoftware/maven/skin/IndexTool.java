@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import javax.script.ScriptException;
 
 import org.apache.velocity.tools.config.DefaultKey;
+import org.apache.velocity.tools.generic.SafeConfig;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
@@ -41,48 +42,55 @@ import org.graalvm.polyglot.Value;
  * </p>
  */
 @DefaultKey("indexTool")
-public class IndexTool {
-
-	/**
-	 * Creates a new instance
-	 */
-	public IndexTool() {
-		/* Do nothing */
-	}
+public class IndexTool extends SafeConfig {
 
 	/**
 	 * UTF-8 Charset
 	 */
 	static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 
-		private static final Value addDocumentFunction;
+	/**
+	 * Static initialization exception
+	 */
+	private static Throwable lastError;
 
-		static {
+	/**
+	 * Javascript function that adds a document to the specified elasticlunr index.
+	 * This function is referenced to through GraalVM Javascript engine
+	 */
+	private static final Value ADD_DOCUMENT_FUNCTION;
+	static {
+		// Build a Graal context for Javascript (with no warnings!)
+		final Context graalContext = Context.newBuilder("js")
+				.allowAllAccess(true)
+				.option("engine.WarnInterpreterOnly", "false")
+				.build();
 
-			// Graal context
-			final Context graalContext = Context.newBuilder("js")
-						.allowAllAccess(true)
-						.option("engine.WarnInterpreterOnly", "false")
-						.build();
+		Value tempFunction;
+		try {
+			// Load elasticlunr (http://elasticlunr.com/)
+			graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
 
-			Value tempFunction;
+			// Load our own JS script and retrieve the pointer to our indexing function
+			tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
 
-				try {
-
-						// Load elasticlunr (http://elasticlunr.com/)
-						graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
-
-						// Load our own JS script
-						tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
-
-				} catch (IOException | PolyglotException e) {
-					/* Can't do much about it here */
-					tempFunction = null;
-				}
-
-				addDocumentFunction = tempFunction;
+		} catch (IOException | PolyglotException e) {
+			/* Can't do much about it here */
+			tempFunction = null;
+			lastError = e;
 		}
+		ADD_DOCUMENT_FUNCTION = tempFunction;
 
+	}
+
+	/**
+	 * Creates a new instance
+	 */
+	public IndexTool() {
+		if (lastError != null) {
+			getLog().error("IndexTool: Could not load the indexing Javascript code", lastError);
+		}
+	}
 
 	/**
 	 * Builds and update the specified elasticlunr.js index.
@@ -110,27 +118,33 @@ public class IndexTool {
 	 * @throws ScriptException when anything bad happens with the Javascript (should never happen except when developing)
 	 * @throws NoSuchMethodException when developer broke the Javascript code
 	 */
-	public static synchronized void buildElasticLunrIndex(final String indexPathString, final String id, final String title, final String keywords, final String body) throws IOException, ScriptException, NoSuchMethodException {
+	public void buildElasticLunrIndex(final String indexPathString, final String id, final String title, final String keywords, final String body) throws IOException, ScriptException, NoSuchMethodException {
 
-		if (addDocumentFunction == null) {
+		if (ADD_DOCUMENT_FUNCTION == null) {
+			getLog().debug("IndexTool: Will not index anything as elasticlunr.js couldn't be loaded");
 			return;
 		}
 
-		// Read the index file, if any
-		String indexJson;
-		Path indexPath = Paths.get(indexPathString);
-		if (indexPath.toFile().exists()) {
-			indexJson = new String(Files.readAllBytes(indexPath), UTF8_CHARSET);
-		} else {
-			indexJson = "";
+		// Make sure the index is updated only once at a time
+		synchronized (ADD_DOCUMENT_FUNCTION) {
+
+			// Read the index file, if any
+			String indexJson;
+			Path indexPath = Paths.get(indexPathString);
+			if (indexPath.toFile().exists()) {
+				indexJson = new String(Files.readAllBytes(indexPath), UTF8_CHARSET);
+			} else {
+				indexJson = "";
+			}
+
+			// Call our Javascript function
+			getLog().debug("IndexTool: Adding {} to the index in {}", id, indexPathString);
+			String result = ADD_DOCUMENT_FUNCTION.execute(indexJson, id, title, keywords, body).asString();
+
+			// Write the result
+			Files.write(indexPath, result.getBytes(UTF8_CHARSET));
+
 		}
-
-		// Call our Javascript function
-				String result = addDocumentFunction.execute(indexJson, id, title, keywords, body).asString();
-
-		// Write the result
-		Files.write(indexPath, result.getBytes(UTF8_CHARSET));
-
 	}
 
 }
