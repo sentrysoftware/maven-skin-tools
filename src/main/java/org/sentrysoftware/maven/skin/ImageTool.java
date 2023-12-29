@@ -89,7 +89,7 @@ public class ImageTool {
 	 * @param path Path to test
 	 * @return whether specified path is absolute or not
 	 */
-	protected static boolean isAbsoluteUrl(String path) {
+	protected static boolean isAbsoluteUrl(final String path) {
 		return ABSOLUTE_URL_PATTERN.matcher(path).find();
 	}
 
@@ -105,9 +105,9 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element checkImageLinks(
-			Element body,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// Initialization
@@ -118,6 +118,11 @@ public class ImageTool {
 
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
+
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get the parent path of " + currentDocument);
+		}
 
 		// Select all images
 		List<Element> elements = body.select("img");
@@ -147,7 +152,7 @@ public class ImageTool {
 
 			// Recalculate the relative link and see whether the original matches
 			// the recalculated one. If not, it means there is a problem in the case.
-			Path recalculatedPath = documentPath.getParent().toRealPath().relativize(sourcePath.toRealPath());
+			Path recalculatedPath = parentPath.toRealPath().relativize(sourcePath.toRealPath());
 			String sourcePathSlashString = sourcePath.toString().replace('\\', '/');
 			String recalculatedPathSlashString = recalculatedPath.toString().replace('\\', '/');
 			if (!recalculatedPathSlashString.endsWith(sourcePathSlashString) && !sourcePathSlashString.endsWith(recalculatedPathSlashString)) {
@@ -177,7 +182,7 @@ public class ImageTool {
 	 * @param file File
 	 * @return the extension of the file
 	 */
-	protected static String getExtension(File file) {
+	protected static String getExtension(final File file) {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
 		if (dotIndex > -1) {
@@ -192,7 +197,7 @@ public class ImageTool {
 	 * @param file File
 	 * @return the name of the file without its extension
 	 */
-	protected static String getNameWithoutExtension(File file) {
+	protected static String getNameWithoutExtension(final File file) {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
 		if (dotIndex > -1) {
@@ -212,15 +217,15 @@ public class ImageTool {
 	 * @throws IOException when cannot read the source image, or write the thumbnail file
 	 */
 	protected static File createThumbnail(
-			File sourceFile,
-			String thumbnailMark,
-			int maxWidth,
-			int maxHeight
+			final File sourceFile,
+			final String thumbnailMark,
+			final int maxWidth,
+			final int maxHeight
 	) throws IOException {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
-			throw new IOException(sourceFile.getAbsolutePath()  + " does not exist");
+			throw new IOException(sourceFile.getAbsolutePath() + " does not exist");
 		}
 
 		// Destination
@@ -267,11 +272,11 @@ public class ImageTool {
 	 * @return a File instance of the converted image, or null if the file was already a WEBP
 	 * @throws IOException when cannot read the image file
 	 */
-	protected static File saveImageFileAsWebp(File sourceFile) throws IOException {
+	protected static File saveImageFileAsWebp(final File sourceFile) throws IOException {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
-			throw new IOException(sourceFile.getAbsolutePath()  + " does not exist");
+			throw new IOException(sourceFile.getAbsolutePath() + " does not exist");
 		}
 
 		// Output file
@@ -332,10 +337,10 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element convertImagesToWebp(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// basedir path
@@ -343,6 +348,11 @@ public class ImageTool {
 
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
+
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get parent path of " + currentDocument);
+		}
 
 		// Select all images
 		List<Element> elements = body.select(selector);
@@ -372,7 +382,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Save as webp
@@ -382,7 +392,7 @@ public class ImageTool {
 			}
 
 			// Calculate the src path of the webp image
-			String webpSrc = documentPath.getParent().relativize(webpFile.toPath()).toString().replace('\\', '/');
+			String webpSrc = parentPath.relativize(webpFile.toPath()).toString().replace('\\', '/');
 
 			// Now wrap the IMG element with <picture> and <source srcset="...webp">
 			element
@@ -413,10 +423,10 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element explicitImageSize(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// basedir path
@@ -460,7 +470,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Read the image
@@ -516,13 +526,13 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element convertImagesToThumbnails(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument,
-			int maxWidth,
-			int maxHeight,
-			String wrapTemplate
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument,
+			final int maxWidth,
+			final int maxHeight,
+			final String wrapTemplate
 	) throws IOException {
 
 		// basedir path
@@ -530,6 +540,11 @@ public class ImageTool {
 
 		// First, calculate the real path of the current document
 		Path documentPath = Paths.get(basedir, currentDocument);
+
+		Path parentPath = documentPath.getParent();
+		if (parentPath == null) {
+			throw new IOException("Couldn't get parent path of " + currentDocument);
+		}
 
 		// Select all images
 		List<Element> elements = body.select(selector);
@@ -562,7 +577,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Image size
@@ -579,7 +594,7 @@ public class ImageTool {
 			int thumbnailHeight = thumbnailImage.getHeight();
 
 			// Calculate the src path of the webp image
-			String thumbnailSrc = documentPath.getParent().relativize(thumbnailFile.toPath()).toString().replace('\\', '/');
+			String thumbnailSrc = parentPath.relativize(thumbnailFile.toPath()).toString().replace('\\', '/');
 
 			// Replace macros in the wrap template
 			String wrapHtml = wrapTemplate
@@ -588,8 +603,7 @@ public class ImageTool {
 				.replaceAll("%thumbWidth%", String.valueOf(thumbnailWidth))
 				.replaceAll("%thumbHeight%", String.valueOf(thumbnailHeight))
 				.replaceAll("%thumbSrc%", thumbnailSrc)
-				.replaceAll("%imgAlt%", imageAlt)
-			;
+				.replaceAll("%imgAlt%", imageAlt);
 
 			// Now wrap the IMG element with template
 			// If the IMG element is inside a PICTURE element, wrap the PICTURE element

@@ -57,12 +57,12 @@ import org.jsoup.parser.Tag;
 public class HtmlTool extends SafeConfig {
 
 	/** A list of all HTML heading classes (h1-6) */
-	private static List<String> HEADINGS = Collections.unmodifiableList(
+	private static final List<String> HEADINGS = Collections.unmodifiableList(
 			Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6"));
 
 
 	private String outputEncoding = "UTF-8";
-	
+
 	/**
 	 * Create a new instance
 	 */
@@ -76,7 +76,7 @@ public class HtmlTool extends SafeConfig {
 	 * @see SafeConfig#configure(ValueParser)
 	 */
 	@Override
-	protected void configure(ValueParser values) {
+	protected void configure(final ValueParser values) {
 
 		// retrieve the Velocity context for output encoding
 		Object velocityContext = values.get("velocityContext");
@@ -109,7 +109,7 @@ public class HtmlTool extends SafeConfig {
 	 *         is returned.
 	 * @since 1.0
 	 */
-	public Element setAttr(Element body, String selector, String attributeKey, String value) {
+	public Element setAttr(final Element body, final String selector, final String attributeKey, final String value) {
 
 		List<Element> elements = body.select(selector);
 
@@ -127,7 +127,7 @@ public class HtmlTool extends SafeConfig {
 	 * @param content HTML fragment to parse
 	 * @return Element of the specified HTML fragment
 	 */
-	public Element parseContent(String content) {
+	public Element parseContent(final String content) {
 		Document doc = Jsoup.parseBodyFragment(content);
 		doc.outputSettings().charset(outputEncoding);
 		return doc.body();
@@ -147,7 +147,7 @@ public class HtmlTool extends SafeConfig {
 	 *         returned.
 	 * @since 1.0
 	 */
-	public List<String> getAttr(Element body, String selector, String attributeKey) {
+	public List<String> getAttr(final Element body, final String selector, final String attributeKey) {
 
 		List<Element> elements = body.select(selector);
 		List<String> attrs = new ArrayList<String>();
@@ -175,7 +175,7 @@ public class HtmlTool extends SafeConfig {
 	 *         is returned.
 	 * @since 1.0
 	 */
-	public Element addClass(Element body, String selector, List<String> classNames, int amount) {
+	public Element addClass(final Element body, final String selector, final List<String> classNames, final int amount) {
 
 		List<Element> elements = body.select(selector);
 		if (amount >= 0) {
@@ -206,7 +206,7 @@ public class HtmlTool extends SafeConfig {
 	 *         is returned.
 	 * @since 1.0
 	 */
-	public Element addClass(Element body, String selector, List<String> classNames) {
+	public Element addClass(final Element body, final String selector, final List<String> classNames) {
 		return addClass(body, selector, classNames, -1);
 	}
 
@@ -223,7 +223,7 @@ public class HtmlTool extends SafeConfig {
 	 *         is returned.
 	 * @since 1.0
 	 */
-	public Element addClass(Element body, String selector, String className) {
+	public Element addClass(final Element body, final String selector, final String className) {
 		return addClass(body, selector, Collections.singletonList(className));
 	}
 
@@ -242,7 +242,7 @@ public class HtmlTool extends SafeConfig {
 	 *         is returned.
 	 * @since 1.0
 	 */
-	public Element wrap(Element body, String selector, String wrapHtml, int amount) {
+	public Element wrap(final Element body, final String selector, final String wrapHtml, final int amount) {
 
 		List<Element> elements = body.select(selector);
 		if (amount >= 0) {
@@ -272,7 +272,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
-	public Element append(Element body, String selector, String appendHtml, int amount) {
+	public Element append(final Element body, final String selector, final String appendHtml, final int amount) {
 
 		List<Element> elements = body.select(selector);
 		if (amount >= 0) {
@@ -303,7 +303,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
-	public Element prepend(Element body, String selector, String prependHtml, int amount) {
+	public Element prepend(final Element body, final String selector, final String prependHtml, final int amount) {
 
 		List<Element> elements = body.select(selector);
 		if (amount >= 0) {
@@ -331,7 +331,7 @@ public class HtmlTool extends SafeConfig {
 	 *         returned.
 	 * @since 1.0
 	 */
-	public Element remove(Element body, String selector) {
+	public Element remove(final Element body, final String selector) {
 
 		List<Element> elements = body.select(selector);
 
@@ -357,7 +357,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
-	public Element replace(Element body, String selector, String replaceHtml, int amount) {
+	public Element replace(final Element body, final String selector, final String replaceHtml, final int amount) {
 
 		List<Element> elements = body.select(selector);
 		if (amount >= 0) {
@@ -385,7 +385,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return A list of element texts as rendered to display. Empty list if no elements are found.
 	 * @since 1.0
 	 */
-	public List<String> text(Element body, String selector) {
+	public List<String> text(final Element body, final String selector) {
 
 		List<Element> elements = body.select(selector);
 		List<String> texts = new ArrayList<String>();
@@ -416,7 +416,7 @@ public class HtmlTool extends SafeConfig {
 	 *         anchor tags are removed. If no elements are found, the original content is returned.
 	 * @since 1.0
 	 */
-	public Element headingAnchorToId(Element body) {
+	public Element headingAnchorToId(final Element body) {
 
 		// selectors for headings without IDs
 		List<String> headNoIds = concat(HEADINGS, ":not([id])", true);
@@ -469,7 +469,7 @@ public class HtmlTool extends SafeConfig {
 	 * @param heading
 	 * @param anchor
 	 */
-	private static void anchorToId(Element heading, Element anchor) {
+	private static void anchorToId(final Element heading, final Element anchor) {
 
 		if ("a".equals(anchor.tagName()) && heading.id().isEmpty()) {
 			String aName = anchor.attr("name");
@@ -498,7 +498,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return list of elements with the text appended/prepended
 	 * @since 1.0
 	 */
-	public static List<String> concat(List<String> elements, String text, boolean append) {
+	public static List<String> concat(final List<String> elements, final String text, final boolean append) {
 		List<String> concats = new ArrayList<String>();
 
 		for (String element : elements) {
@@ -524,7 +524,7 @@ public class HtmlTool extends SafeConfig {
 	 *         were with IDs already, the original content is returned.
 	 * @since 1.0
 	 */
-	public Element ensureHeadingIds(Element body) {
+	public Element ensureHeadingIds(final Element body) {
 
 		// Find all existing IDs (to avoid generating duplicates)
 		Map<String, Integer> ids = new HashMap<String, Integer>();
@@ -573,7 +573,7 @@ public class HtmlTool extends SafeConfig {
 	 * @return HTML content fixed IDs.
 	 * @since 1.0
 	 */
-	public Element fixIds(Element body) {
+	public Element fixIds(final Element body) {
 
 		// Find all IDs and remove unsupported characters
 		List<Element> idElems = body.select("*[id]");
@@ -611,7 +611,7 @@ public class HtmlTool extends SafeConfig {
 	 *         content is returned.
 	 * @since 1.0
 	 */
-	public Element fixTableHeads(Element body) {
+	public Element fixTableHeads(final Element body) {
 
 		// select rows with <th> tags within <tbody>
 		List<Element> tableHeadRows = body.select("table > tbody > tr:has(th)");
@@ -657,7 +657,7 @@ public class HtmlTool extends SafeConfig {
 	 * @param input The string (free) to be transformed into a valid element ID
 	 * @return the proper slug
 	 */
-	public static String slug(String input) {
+	public static String slug(final String input) {
 		String normalized = Normalizer.normalize(input, Form.NFD);
 		String nowhitespace = WORD_SEPARATORS.matcher(normalized).replaceAll("-");
 		String noSpecialChars = NONLATIN.matcher(nowhitespace).replaceAll("");
@@ -672,7 +672,7 @@ public class HtmlTool extends SafeConfig {
 	 *            HTML content to modify
 	 * @return HTML content fixed linkss
 	 */
-	public Element fixProtocolRelativeUrls(Element body) {
+	public Element fixProtocolRelativeUrls(final Element body) {
 
 		// Find all links with HREF that starts with //
 		// (i.e. protocol-relative)

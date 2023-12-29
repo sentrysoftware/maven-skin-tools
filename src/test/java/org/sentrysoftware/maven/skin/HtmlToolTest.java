@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HtmlToolTest {
 
-	private static Pattern WHITES_REGEX = Pattern.compile("\\s+");
+	private static final Pattern WHITES_REGEX = Pattern.compile("\\s+");
 
 	private static String HTML_SOURCE;
 	private static Element HTML_ELEMENT;
@@ -183,7 +183,7 @@ class HtmlToolTest {
 	 * @param path Path to the resource file
 	 * @return The content of the resource file as a String
 	 */
-	protected static String getResourceAsString(String path) {
+	protected static String getResourceAsString(final String path) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(HtmlToolTest.class.getResourceAsStream(path)));
 		StringBuilder builder = new StringBuilder();
@@ -204,7 +204,7 @@ class HtmlToolTest {
 	 * @param source The text from which we remove white spaces
 	 * @return the same text without any white spaces
 	 */
-	private static String trimWhites(String source) {
+	private static String trimWhites(final String source) {
 		return WHITES_REGEX.matcher(source).replaceAll("");
 	}
 
@@ -213,7 +213,7 @@ class HtmlToolTest {
 	 * @param element The HTML Element to parse
 	 * @return the HTML source without any white spaces
 	 */
-	private static String trimWhites(Element element) {
+	private static String trimWhites(final Element element) {
 		return WHITES_REGEX.matcher(element.html()).replaceAll("");
 	}
 
