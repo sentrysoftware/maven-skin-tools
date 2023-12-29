@@ -225,7 +225,7 @@ public class ImageTool {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
-			throw new IOException(sourceFile.getAbsolutePath()  + " does not exist");
+			throw new IOException(sourceFile.getAbsolutePath() + " does not exist");
 		}
 
 		// Destination
@@ -276,7 +276,7 @@ public class ImageTool {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
-			throw new IOException(sourceFile.getAbsolutePath()  + " does not exist");
+			throw new IOException(sourceFile.getAbsolutePath() + " does not exist");
 		}
 
 		// Output file
@@ -382,7 +382,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Save as webp
@@ -470,7 +470,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Read the image
@@ -577,7 +577,7 @@ public class ImageTool {
 
 			// Sanity check
 			if (!sourceFile.isFile()) {
-				throw new IOException(sourceFile.getAbsolutePath()  + " (referenced as " + imageSrc + ") does not exist");
+				throw new IOException(sourceFile.getAbsolutePath() + " (referenced as " + imageSrc + ") does not exist");
 			}
 
 			// Image size
