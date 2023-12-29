@@ -89,7 +89,7 @@ public class ImageTool {
 	 * @param path Path to test
 	 * @return whether specified path is absolute or not
 	 */
-	protected static boolean isAbsoluteUrl(String path) {
+	protected static boolean isAbsoluteUrl(final String path) {
 		return ABSOLUTE_URL_PATTERN.matcher(path).find();
 	}
 
@@ -105,9 +105,9 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element checkImageLinks(
-			Element body,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// Initialization
@@ -182,7 +182,7 @@ public class ImageTool {
 	 * @param file File
 	 * @return the extension of the file
 	 */
-	protected static String getExtension(File file) {
+	protected static String getExtension(final File file) {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
 		if (dotIndex > -1) {
@@ -197,7 +197,7 @@ public class ImageTool {
 	 * @param file File
 	 * @return the name of the file without its extension
 	 */
-	protected static String getNameWithoutExtension(File file) {
+	protected static String getNameWithoutExtension(final File file) {
 		String name = file.getName();
 		int dotIndex = name.lastIndexOf('.');
 		if (dotIndex > -1) {
@@ -217,10 +217,10 @@ public class ImageTool {
 	 * @throws IOException when cannot read the source image, or write the thumbnail file
 	 */
 	protected static File createThumbnail(
-			File sourceFile,
-			String thumbnailMark,
-			int maxWidth,
-			int maxHeight
+			final File sourceFile,
+			final String thumbnailMark,
+			final int maxWidth,
+			final int maxHeight
 	) throws IOException {
 
 		// Sanity check
@@ -272,7 +272,7 @@ public class ImageTool {
 	 * @return a File instance of the converted image, or null if the file was already a WEBP
 	 * @throws IOException when cannot read the image file
 	 */
-	protected static File saveImageFileAsWebp(File sourceFile) throws IOException {
+	protected static File saveImageFileAsWebp(final File sourceFile) throws IOException {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
@@ -337,10 +337,10 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element convertImagesToWebp(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// basedir path
@@ -423,10 +423,10 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element explicitImageSize(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument
 	) throws IOException {
 
 		// basedir path
@@ -526,13 +526,13 @@ public class ImageTool {
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element convertImagesToThumbnails(
-			Element body,
-			String selector,
-			String basedir,
-			String currentDocument,
-			int maxWidth,
-			int maxHeight,
-			String wrapTemplate
+			final Element body,
+			final String selector,
+			final String basedir,
+			final String currentDocument,
+			final int maxWidth,
+			final int maxHeight,
+			final String wrapTemplate
 	) throws IOException {
 
 		// basedir path

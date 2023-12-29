@@ -110,7 +110,7 @@ public class IndexTool {
 	 * @throws ScriptException when anything bad happens with the Javascript (should never happen except when developing)
 	 * @throws NoSuchMethodException when developer broke the Javascript code
 	 */
-	public static synchronized void buildElasticLunrIndex(String indexPathString, String id, String title, String keywords, String body) throws IOException, ScriptException, NoSuchMethodException {
+	public static synchronized void buildElasticLunrIndex(final String indexPathString, final String id, final String title, final String keywords, final String body) throws IOException, ScriptException, NoSuchMethodException {
 
 		if (addDocumentFunction == null) {
 			return;

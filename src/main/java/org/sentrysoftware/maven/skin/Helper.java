@@ -38,7 +38,7 @@ import java.nio.file.Paths;
 /**
  * Utility class with various static helper functions.
  */
-public class Helper {
+public final class Helper {
 
 	private Helper() {
 		/* Do nothing */
@@ -52,7 +52,7 @@ public class Helper {
 	 * @param charset The charset to use when writing text
 	 * @throws IOException when anything goes wrong
 	 */
-	public static void writeText(File file, String text, Charset charset) throws IOException {
+	public static void writeText(final File file, final String text, final Charset charset) throws IOException {
 
 		// Write the result using system line separator
 		try (
@@ -75,7 +75,7 @@ public class Helper {
 	 *            Path to the file
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
-	public static long getLastModifiedTime(Path path) {
+	public static long getLastModifiedTime(final Path path) {
 
 		try {
 			return Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toMillis();
@@ -92,7 +92,7 @@ public class Helper {
 	 *            File instance
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
-	public static long getLastModifiedTime(File file) {
+	public static long getLastModifiedTime(final File file) {
 		return getLastModifiedTime(Paths.get(file.toURI()));
 	}
 
@@ -104,7 +104,7 @@ public class Helper {
 	 *            Path to the file (as a String)
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
-	public static long getLastModifiedTime(String filePathString) {
+	public static long getLastModifiedTime(final String filePathString) {
 		return getLastModifiedTime(Paths.get(filePathString));
 	}
 
@@ -115,7 +115,7 @@ public class Helper {
 		 * @return The content of the resource file as a String
 		 * @throws IOException If an I/O error occurs
 		 */
-		public static String readResourceAsString(String resourcePath) throws IOException {
+		public static String readResourceAsString(final String resourcePath) throws IOException {
 				try (InputStream inputStream = Helper.class.getResourceAsStream(resourcePath)) {
 						if (inputStream == null) {
 								throw new IOException("Resource not found: " + resourcePath);
