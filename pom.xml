@@ -140,30 +140,38 @@
 					</configuration>
 				</plugin>
 
+				<!-- checkstyle -->
+				<plugin>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.3.1</version>
+					<configuration>
+						<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+						<linkXref>true</linkXref>
+						<configLocation>checkstyle.xml</configLocation>
+					</configuration>
+				</plugin>
+
+				<!-- spotbugs -->
+				<plugin>
+					<groupId>com.github.spotbugs</groupId>
+					<artifactId>spotbugs-maven-plugin</artifactId>
+					<version>4.8.2.0</version>
+				</plugin>
+
+				<!-- pmd -->
+				<plugin>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<version>3.21.2</version>
+					<configuration>
+						<targetJdk>${maven.compiler.release}</targetJdk>
+					</configuration>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 
 		<!-- Actual build plugins -->
 		<plugins>
-
-			<!-- rewrite -->
-			<plugin>
-				<groupId>org.openrewrite.maven</groupId>
-				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>5.17.1</version>
-				<configuration>
-					<activeRecipes>
-						<recipe>org.openrewrite.staticanalysis.CodeCleanup</recipe>
-					</activeRecipes>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.openrewrite.recipe</groupId>
-						<artifactId>rewrite-static-analysis</artifactId>
-						<version>1.1.4</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 
 			<!-- compiler -->
 			<plugin>
@@ -283,6 +291,47 @@
 				<version>3.3.0</version>
 			</plugin>
 
+			<!-- checkstyle -->
+			<plugin>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>checkstyle-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- pmd -->
+			<plugin>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>pmd-check</id>
+						<goals>
+							<goal>check</goal>
+							<!-- <goal>cpd-check</goal> -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- spotbugs -->
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>spotbugs-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- install -->
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
@@ -310,31 +359,17 @@
 			<!-- checkstyle -->
 			<plugin>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.3.1</version>
-				<configuration>
-					<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-					<linkXref>true</linkXref>
-					<configLocation>checkstyle.xml</configLocation>
-				</configuration>
 			</plugin>
 
 			<!-- pmd -->
 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.21.2</version>
-				<configuration>
-					<linkXref>true</linkXref>
-					<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-					<minimumTokens>50</minimumTokens>
-					<targetJdk>${maven.compiler.release}</targetJdk>
-				</configuration>
 			</plugin>
 
 			<!-- spotbugs -->
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.8.2.0</version>
 			</plugin>
 
 			<!-- changelog -->
