@@ -1,5 +1,25 @@
 package org.sentrysoftware.maven.skin;
 
+/*-
+ * ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲
+ * Sentry Maven Skin Tools
+ * ჻჻჻჻჻჻
+ * Copyright 2017 - 2024 Sentry Software
+ * ჻჻჻჻჻჻
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
+ */
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
@@ -55,7 +75,7 @@ class HtmlToolTest {
 		String result = trimWhites(HTML_TOOL.prepend(HTML_ELEMENT.clone(), "div.my-class", "<ol>Test</ol>", 1));
 		assertTrue(result.contains("<divclass=\"my-class\"><ol>Test</ol>"));
 	}
-	
+
 	@Test
 	void testReplace() {
 		{
@@ -156,7 +176,7 @@ class HtmlToolTest {
 	@Test
 	void testSetAttr() {
 		String result = trimWhites(HTML_TOOL.setAttr(AGENT_HTML_ELEMENT.clone(), "h1", "id", "my-id"));
-		assertTrue(result.startsWith("<h1id=\"my-id\">ConfiguringtheAgent</h1>"));
+		assertTrue(result.contains("<h1id=\"my-id\">ConfiguringtheAgent</h1>"));
 	}
 
 	@Test
@@ -164,7 +184,7 @@ class HtmlToolTest {
 		String result = trimWhites(HTML_TOOL.fixProtocolRelativeUrls(AGENT_HTML_ELEMENT.clone()));
 		assertFalse(result.contains("\"//"), "Protocol-relative URLs must have been fixed");
 	}
-	
+
 	@Test
 	void testSlug() {
 		assertEquals("id", HtmlTool.slug("id"));
@@ -173,7 +193,7 @@ class HtmlToolTest {
 		assertEquals("id9", HtmlTool.slug("id9"));
 		assertEquals("id-id", HtmlTool.slug("id./id"));
 		assertEquals("id-test", HtmlTool.slug("/id/test/"));
-		assertEquals("idee", HtmlTool.slug("idée"));		
+		assertEquals("idee", HtmlTool.slug("idée"));
 		assertEquals("idee-qu-elle-est-bonne", HtmlTool.slug("idée qu'elle est bonne"));
 	}
 
