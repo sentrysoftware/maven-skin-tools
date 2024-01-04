@@ -229,9 +229,9 @@
 					<licenseName>apache_v2</licenseName>
 					<copyrightOwners>Sentry Software</copyrightOwners>
 					<copyrightStringFormat>Copyright %1$s %2$s</copyrightStringFormat>
-					<includes>
-						<include>main/java/**/*.java</include>
-					</includes>
+					<extraExtensions>
+						<md>xml</md>
+					</extraExtensions>
 					<trimHeaderLine>true</trimHeaderLine>
 					<canUpdateCopyright>true</canUpdateCopyright>
 					<canUpdateDescription>true</canUpdateDescription>
