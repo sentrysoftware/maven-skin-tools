@@ -142,7 +142,11 @@ public class IndexTool extends SafeConfig {
 			String result = ADD_DOCUMENT_FUNCTION.execute(indexJson, id, title, keywords, body).asString();
 
 			// Write the result
-			Files.write(indexPath, result.getBytes(UTF8_CHARSET));
+			try {
+				Files.write(indexPath, result.getBytes(UTF8_CHARSET));
+			} catch (IOException e) {
+				getLog().warn("IndexTool: Couldn't write index to " + indexPath.toString() + " (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+			}
 
 		}
 	}
