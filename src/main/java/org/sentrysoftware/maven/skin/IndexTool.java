@@ -36,10 +36,8 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
 
 /**
- * indexTool is a reference-able in a Velocity template.
- * <p>
+ * indexTool is reference-able in a Velocity template.
  * It creates the elasticlunr index of the specified HTML content.
- * </p>
  */
 @DefaultKey("indexTool")
 public class IndexTool extends SafeConfig {
@@ -47,41 +45,17 @@ public class IndexTool extends SafeConfig {
 	/**
 	 * UTF-8 Charset
 	 */
-	static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
+	private static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Static initialization exception
+	 * JS add-document function loaded from build-index.js
 	 */
-	private static Throwable lastError;
+	private static volatile Value addDocumentFunction = null;
 
 	/**
-	 * Javascript function that adds a document to the specified elasticlunr index.
-	 * This function is referenced to through GraalVM Javascript engine
+	 * Initialization error (if any)
 	 */
-	private static final Value ADD_DOCUMENT_FUNCTION;
-	static {
-		// Build a Graal context for Javascript (with no warnings!)
-		final Context graalContext = Context.newBuilder("js")
-				.allowAllAccess(true)
-				.option("engine.WarnInterpreterOnly", "false")
-				.build();
-
-		Value tempFunction;
-		try {
-			// Load elasticlunr (http://elasticlunr.com/)
-			graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
-
-			// Load our own JS script and retrieve the pointer to our indexing function
-			tempFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
-
-		} catch (IOException | PolyglotException e) {
-			/* Can't do much about it here */
-			tempFunction = null;
-			lastError = e;
-		}
-		ADD_DOCUMENT_FUNCTION = tempFunction;
-
-	}
+	private static volatile Throwable lastError = null;
 
 	/**
 	 * Creates a new instance
@@ -93,62 +67,74 @@ public class IndexTool extends SafeConfig {
 	}
 
 	/**
-	 * Builds and update the specified elasticlunr.js index.
-	 * <p>
-	 * If the specified elasticlunr.js index file doesn't exist, it will be created.
-	 * Otherwise, it will be updated with the specified document.
-	 * </p>
-	 * <p>
-	 * The elasticlunr.js index file is the JSON-serialized index that needs to be loaded
-	 * into elasticlunr.js with:
-	 * </p>
-	 * <p>
-	 * {@code elasticlunr.Index.load(indexJson);}
-	 * </p>
-	 * <p>
-	 * This uses http://elasticlunrjs.com version 0.9.5.
-	 * </p>
+	 * Builds and updates the elasticlunr.js index.
 	 *
 	 * @param indexPathString Path to the JSON-serialized elasticlunr.js index
-	 * @param id ID of the document to add/update (typically it's URL)
+	 * @param id ID of the document (typically its URL)
 	 * @param title Title of the document
-	 * @param keywords Keywords of the document (separated with any non alphabetical characters)
-	 * @param body Content of the document to be added to the index
-	 * @throws IOException when cannot read or write the index file
-	 * @throws ScriptException when anything bad happens with the Javascript (should never happen except when developing)
-	 * @throws NoSuchMethodException when developer broke the Javascript code
+	 * @param keywords Keywords of the document
+	 * @param body Content of the document
+	 * @throws IOException if the index cannot be read or written
+	 * @throws ScriptException if the JS engine fails
+	 * @throws NoSuchMethodException if JS is malformed
 	 */
-	public void buildElasticLunrIndex(final String indexPathString, final String id, final String title, final String keywords, final String body) throws IOException, ScriptException, NoSuchMethodException {
+	public void buildElasticLunrIndex(
+		final String indexPathString,
+		final String id,
+		final String title,
+		final String keywords,
+		final String body
+	) throws IOException, ScriptException, NoSuchMethodException {
 
-		if (ADD_DOCUMENT_FUNCTION == null) {
+		initGraalIfNeeded();
+
+		if (addDocumentFunction == null) {
 			getLog().debug("IndexTool: Will not index anything as elasticlunr.js couldn't be loaded");
 			return;
 		}
 
-		// Make sure the index is updated only once at a time
-		synchronized (ADD_DOCUMENT_FUNCTION) {
-
-			// Read the index file, if any
+		synchronized (addDocumentFunction) {
+			// Load existing index if any
 			String indexJson;
 			Path indexPath = Paths.get(indexPathString);
-			if (indexPath.toFile().exists()) {
-				indexJson = new String(Files.readAllBytes(indexPath), UTF8_CHARSET);
+			if (Files.exists(indexPath)) {
+				indexJson = Files.readString(indexPath, UTF8_CHARSET);
 			} else {
 				indexJson = "";
 			}
 
-			// Call our Javascript function
+			// Execute JS indexing
 			getLog().debug("IndexTool: Adding {} to the index in {}", id, indexPathString);
-			String result = ADD_DOCUMENT_FUNCTION.execute(indexJson, id, title, keywords, body).asString();
+			String result = addDocumentFunction.execute(indexJson, id, title, keywords, body).asString();
 
-			// Write the result
+			// Write result back to file
 			try {
-				Files.write(indexPath, result.getBytes(UTF8_CHARSET));
+				Files.writeString(indexPath, result, UTF8_CHARSET);
 			} catch (IOException e) {
-				getLog().warn("IndexTool: Couldn't write index to " + indexPath.toString() + " (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+				getLog().warn("IndexTool: Couldn't write index to " + indexPath + " (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
 			}
-
 		}
 	}
 
+	/**
+	 * Lazy-loads the GraalVM JS context and function
+	 */
+	private static synchronized void initGraalIfNeeded() {
+		if (addDocumentFunction != null || lastError != null) {
+			return;
+		}
+		try {
+			Context graalContext = Context.newBuilder("js")
+				.allowAllAccess(true)
+				.option("engine.WarnInterpreterOnly", "false")
+				.build();
+
+			graalContext.eval("js", Helper.readResourceAsString("/elasticlunr.min.js"));
+			addDocumentFunction = graalContext.eval("js", Helper.readResourceAsString("/build-index.js"));
+
+		} catch (IOException | PolyglotException e) {
+			lastError = e;
+			addDocumentFunction = null;
+		}
+	}
 }
