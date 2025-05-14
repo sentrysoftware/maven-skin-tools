@@ -129,7 +129,7 @@ class HtmlToolTest {
 		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<h6>test</h6><a name='myTest'>")));
 		assertTrue(result.contains("<h6id=\"myTest\">"));
 
-		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<a name='myTest' /><h6>test</h6>")));
+		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<a name='myTest'></a><h6>test</h6>")));
 		assertTrue(result.contains("<h6id=\"myTest\">"));
 	}
 
@@ -217,15 +217,6 @@ class HtmlToolTest {
 		}
 
 		return builder.toString();
-	}
-
-	/**
-	 * Remove all white characters (\\s regex, i.e. spaces, tabs and new lines)
-	 * @param source The text from which we remove white spaces
-	 * @return the same text without any white spaces
-	 */
-	private static String trimWhites(final String source) {
-		return WHITES_REGEX.matcher(source).replaceAll("");
 	}
 
 	/**

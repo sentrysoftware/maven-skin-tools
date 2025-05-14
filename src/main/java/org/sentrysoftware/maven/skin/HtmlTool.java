@@ -128,6 +128,9 @@ public class HtmlTool extends SafeConfig {
 	 * @return Element of the specified HTML fragment
 	 */
 	public Element parseContent(final String content) {
+		if (content == null) {
+			return new Element(Tag.valueOf("body"), "");
+		}
 		Document doc = Jsoup.parseBodyFragment(content);
 		doc.outputSettings().charset(outputEncoding);
 		return doc.body();

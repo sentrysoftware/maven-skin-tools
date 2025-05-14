@@ -57,6 +57,7 @@
 	<properties>
 		<!-- Java 11 -->
 		<maven.compiler.release>11</maven.compiler.release>
+		<graaljs.version>24.2.1</graaljs.version>
 
 		<!-- Reproducible Build -->
 		<!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
@@ -94,17 +95,18 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.18.1</version>
+			<version>1.20.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.graalvm.js</groupId>
+			<groupId>org.graalvm.polyglot</groupId>
+			<artifactId>polyglot</artifactId>
+			<version>${graaljs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.graalvm.polyglot</groupId>
 			<artifactId>js</artifactId>
-			<version>23.0.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.graalvm.js</groupId>
-			<artifactId>js-scriptengine</artifactId>
-			<version>24.0.2</version>
+			<version>${graaljs.version}</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.sejda.imageio</groupId>
