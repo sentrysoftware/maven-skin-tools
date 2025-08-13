@@ -116,9 +116,9 @@
 			<version>23.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.sejda.imageio</groupId>
+			<groupId>com.github.gotson</groupId>
 			<artifactId>webp-imageio</artifactId>
-			<version>0.1.6</version>
+			<version>0.2.2</version>
 		</dependency>
 	</dependencies>
 
