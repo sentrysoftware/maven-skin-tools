@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.sentrysoftware</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>3-20250814.102518-3</version>
+		<version>3</version>
 	</parent>
 
 	<groupId>org.sentrysoftware.maven</groupId>
@@ -67,13 +67,13 @@
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.11.0</version>
+			<version>1.12.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.11.0</version>
+			<version>5.12.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -84,17 +84,17 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.18.1</version>
+			<version>1.19.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js</artifactId>
-			<version>23.0.5</version>
+			<version>23.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js-scriptengine</artifactId>
-			<version>24.0.2</version>
+			<version>24.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.gotson</groupId>
