@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.sentrysoftware</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>3-SNAPSHOT</version>
+		<version>3-20250814.102518-3</version>
 	</parent>
 
 	<groupId>org.sentrysoftware.maven</groupId>
@@ -63,27 +63,17 @@
 		<project.build.outputTimestamp>2023-12-29T14:06:50Z</project.build.outputTimestamp>
 	</properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>5.11.0</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
+			<version>1.11.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.11.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
