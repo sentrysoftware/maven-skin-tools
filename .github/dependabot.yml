@@ -3,10 +3,22 @@ updates:
 - package-ecosystem: maven
   directory: "/"
   schedule:
-    interval: daily
-  # ignore:
-  #   - dependency-name: org.apache.maven:*
+    interval: weekly
+    groups:
+      minor:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    interval: "daily"
+    interval: weekly
+    groups:
+      everything:
+        applies-to: version-updates
+        patterns:
+          - "*"
