@@ -127,7 +127,11 @@ public class HtmlTool extends SafeConfig {
 	 * @return Element of the specified HTML fragment
 	 */
 	public Element parseContent(final String content) {
-		Document doc = Jsoup.parseBodyFragment(content);
+		// Convert XHTML-style self-closing anchor tags to properly closed tags
+		// because newer versions of Jsoup don't treat <a .../> as self-closing
+		String processedContent = content.replaceAll("<a\\s+([^>]*?)\\s*/>", "<a $1></a>");
+		
+		Document doc = Jsoup.parseBodyFragment(processedContent);
 		doc.outputSettings().charset(outputEncoding);
 		return doc.body();
 	}

@@ -129,7 +129,7 @@ class HtmlToolTest {
 		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<h6>test</h6><a name='myTest'>")));
 		assertTrue(result.contains("<h6id=\"myTest\">"));
 
-		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<a name='myTest'></a><h6>test</h6>")));
+		result = trimWhites(HTML_TOOL.headingAnchorToId(HTML_TOOL.parseContent("<a name='myTest' /><h6>test</h6>")));
 		assertTrue(result.contains("<h6id=\"myTest\">"));
 	}
 
