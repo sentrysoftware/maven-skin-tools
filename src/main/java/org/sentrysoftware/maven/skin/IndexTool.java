@@ -61,7 +61,8 @@ public class IndexTool extends SafeConfig {
 	private static final Value ADD_DOCUMENT_FUNCTION;
 	static {
 		// Build a Graal context for Javascript (with no warnings!)
-		final Context graalContext = Context.newBuilder("js")
+		final Context graalContext = Context
+				.newBuilder("js")
 				.allowAllAccess(true)
 				.option("engine.WarnInterpreterOnly", "false")
 				.build();
@@ -118,7 +119,15 @@ public class IndexTool extends SafeConfig {
 	 * @throws ScriptException when anything bad happens with the Javascript (should never happen except when developing)
 	 * @throws NoSuchMethodException when developer broke the Javascript code
 	 */
-	public void buildElasticLunrIndex(final String indexPathString, final String id, final String title, final String keywords, final String body) throws IOException, ScriptException, NoSuchMethodException {
+	public void buildElasticLunrIndex(
+			final String indexPathString,
+			final String id,
+			final String title,
+			final String keywords,
+			final String body)
+			throws IOException,
+			ScriptException,
+			NoSuchMethodException {
 
 		if (ADD_DOCUMENT_FUNCTION == null) {
 			getLog().debug("IndexTool: Will not index anything as elasticlunr.js couldn't be loaded");
@@ -145,7 +154,10 @@ public class IndexTool extends SafeConfig {
 			try {
 				Files.write(indexPath, result.getBytes(UTF8_CHARSET));
 			} catch (IOException e) {
-				getLog().warn("IndexTool: Couldn't write index to " + indexPath.toString() + " (" + e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+				getLog()
+						.warn(
+								"IndexTool: Couldn't write index to " + indexPath.toString() + " (" + e.getClass().getSimpleName()
+										+ ": " + e.getMessage() + ")");
 			}
 
 		}

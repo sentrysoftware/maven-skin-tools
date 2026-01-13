@@ -47,7 +47,6 @@ import com.luciad.imageio.webp.WebPWriteParam;
 
 /**
  * Set of tools for handling images
- *
  */
 @DefaultKey("imageTool")
 public class ImageTool {
@@ -97,18 +96,18 @@ public class ImageTool {
 	 * Check the image links in the document and make sure they refer to a file that
 	 * actually exists.
 	 *
-	 * @param body         the HTML content
-	 * @param basedir         Actual root directory of the site on the file system
+	 * @param body the HTML content
+	 * @param basedir Actual root directory of the site on the file system
 	 * @param currentDocument Logical path of the document being parsed (e.g.
-	 *                        "index.html", or "subdir/subpage.html")
+	 *        "index.html", or "subdir/subpage.html")
 	 * @return the updated HTML content
 	 * @throws IOException when an image cannot be read or converted
 	 */
 	public Element checkImageLinks(
 			final Element body,
 			final String basedir,
-			final String currentDocument
-	) throws IOException {
+			final String currentDocument)
+			throws IOException {
 
 		// Initialization
 		List<String> errorList = new ArrayList<String>();
@@ -155,8 +154,12 @@ public class ImageTool {
 			Path recalculatedPath = parentPath.toRealPath().relativize(sourcePath.toRealPath());
 			String sourcePathSlashString = sourcePath.toString().replace('\\', '/');
 			String recalculatedPathSlashString = recalculatedPath.toString().replace('\\', '/');
-			if (!recalculatedPathSlashString.endsWith(sourcePathSlashString) && !sourcePathSlashString.endsWith(recalculatedPathSlashString)) {
-				errorList.add("Referenced image " + imageSrc + " in " + currentDocument + " doesn't match case of actual file " + recalculatedPath);
+			if (!recalculatedPathSlashString.endsWith(sourcePathSlashString)
+					&& !sourcePathSlashString.endsWith(recalculatedPathSlashString)) {
+				errorList
+						.add(
+								"Referenced image " + imageSrc + " in " + currentDocument + " doesn't match case of actual file "
+										+ recalculatedPath);
 			}
 
 			// Sanity check
@@ -175,10 +178,10 @@ public class ImageTool {
 
 	}
 
-
 	/**
 	 * Returns the extension of the file
 	 * <p>
+	 *
 	 * @param file File
 	 * @return the extension of the file
 	 */
@@ -194,6 +197,7 @@ public class ImageTool {
 	/**
 	 * Returns the name of the file without its extension
 	 * <p>
+	 *
 	 * @param file File
 	 * @return the name of the file without its extension
 	 */
@@ -209,6 +213,7 @@ public class ImageTool {
 	/**
 	 * Create a thumbnail image file from the specified image file.
 	 * <p>
+	 *
 	 * @param sourceFile File instance of the source image
 	 * @param thumbnailMark Suffix to be appended to the source file name to build the thumbnail file
 	 * @param maxWidth Maximum width of the thumbnail, 0 if no maximum width
@@ -220,8 +225,8 @@ public class ImageTool {
 			final File sourceFile,
 			final String thumbnailMark,
 			final int maxWidth,
-			final int maxHeight
-	) throws IOException {
+			final int maxHeight)
+			throws IOException {
 
 		// Sanity check
 		if (!sourceFile.isFile()) {
@@ -268,6 +273,7 @@ public class ImageTool {
 	/**
 	 * Saves the specified image file as a WEBP image.
 	 * <p>
+	 *
 	 * @param sourceFile image file to convert to WEBP
 	 * @return a File instance of the converted image, or null if the file was already a WEBP
 	 * @throws IOException when cannot read the image file
@@ -326,13 +332,13 @@ public class ImageTool {
 	/**
 	 * Upgrades all images in the specified HTML document to WEBP.
 	 *
-	 * @param body         the HTML content
-	 * @param selector        CSS selector to select all images to upgrade
-	 *                        ("img.screenshot" will process all &lt;IMG
-	 *                        class="screenshot"&gt; elements)
-	 * @param basedir         Actual root directory of the site on the file system
+	 * @param body the HTML content
+	 * @param selector CSS selector to select all images to upgrade
+	 *        ("img.screenshot" will process all &lt;IMG
+	 *        class="screenshot"&gt; elements)
+	 * @param basedir Actual root directory of the site on the file system
 	 * @param currentDocument Logical path of the document being parsed (e.g.
-	 *                        "index.html", or "subdir/subpage.html")
+	 *        "index.html", or "subdir/subpage.html")
 	 * @return the updated HTML content
 	 * @throws IOException when an image cannot be read or converted
 	 */
@@ -340,8 +346,8 @@ public class ImageTool {
 			final Element body,
 			final String selector,
 			final String basedir,
-			final String currentDocument
-	) throws IOException {
+			final String currentDocument)
+			throws IOException {
 
 		// basedir path
 		Path basedirPath = Paths.get(basedir).toAbsolutePath();
@@ -396,11 +402,11 @@ public class ImageTool {
 
 			// Now wrap the IMG element with <picture> and <source srcset="...webp">
 			element
-				.wrap("<picture>")
-				.parent()
-				.prependElement("source")
-				.attr("srcset", webpSrc)
-				.attr("type", "image/webp");
+					.wrap("<picture>")
+					.parent()
+					.prependElement("source")
+					.attr("srcset", webpSrc)
+					.attr("type", "image/webp");
 
 		}
 
@@ -408,17 +414,16 @@ public class ImageTool {
 
 	}
 
-
 	/**
 	 * Explicitly states the width and height of each image in the specified document.
 	 *
-	 * @param body         the HTML content
-	 * @param selector        CSS selector to select all images to upgrade
-	 *                        ("img.screenshot" will process all &lt;IMG
-	 *                        class="screenshot"&gt; elements)
-	 * @param basedir         Actual root directory of the site on the file system
+	 * @param body the HTML content
+	 * @param selector CSS selector to select all images to upgrade
+	 *        ("img.screenshot" will process all &lt;IMG
+	 *        class="screenshot"&gt; elements)
+	 * @param basedir Actual root directory of the site on the file system
 	 * @param currentDocument Logical path of the document being parsed (e.g.
-	 *                        "index.html", or "subdir/subpage.html")
+	 *        "index.html", or "subdir/subpage.html")
 	 * @return the updated HTML content
 	 * @throws IOException when an image cannot be read or converted
 	 */
@@ -426,8 +431,8 @@ public class ImageTool {
 			final Element body,
 			final String selector,
 			final String basedir,
-			final String currentDocument
-	) throws IOException {
+			final String currentDocument)
+			throws IOException {
 
 		// basedir path
 		Path basedirPath = Paths.get(basedir).toAbsolutePath();
@@ -481,14 +486,16 @@ public class ImageTool {
 
 			// Now set the width and height attributes (and CSS)
 			element
-				.attr("width", String.valueOf(sourceImage.getWidth()))
-				.attr("height", String.valueOf(sourceImage.getHeight()))
-				.attr("style", String.format(
-						"width: %dpx; height: %dpx;%s",
-						sourceImage.getWidth(),
-						sourceImage.getHeight(),
-						element.attr("style")
-				));
+					.attr("width", String.valueOf(sourceImage.getWidth()))
+					.attr("height", String.valueOf(sourceImage.getHeight()))
+					.attr(
+							"style",
+							String
+									.format(
+											"width: %dpx; height: %dpx;%s",
+											sourceImage.getWidth(),
+											sourceImage.getHeight(),
+											element.attr("style")));
 
 		}
 
@@ -510,18 +517,18 @@ public class ImageTool {
 	 * <li><code>%thumbSrc%</code>: the thumbnail image source path
 	 * </ul>
 	 *
-	 * @param body         the HTML content
-	 * @param selector        CSS selector to select all images to upgrade
-	 *                        ("img.screenshot" will process all &lt;IMG
-	 *                        class="screenshot"&gt; elements)
-	 * @param basedir         Actual root directory of the site on the file system
+	 * @param body the HTML content
+	 * @param selector CSS selector to select all images to upgrade
+	 *        ("img.screenshot" will process all &lt;IMG
+	 *        class="screenshot"&gt; elements)
+	 * @param basedir Actual root directory of the site on the file system
 	 * @param currentDocument Logical path of the document being parsed (e.g.
-	 *                        "index.html", or "subdir/subpage.html")
-	 * @param maxWidth        Maximum width for the thumbnail (or 0 for no maximum)
-	 * @param maxHeight       Maximum height for the thumbnail (or 0 for no maximum)
-	 * @param wrapTemplate    HTML code wrap the image element with. This will be
-	 *                        typically used to create the thumbnail element. The HTML
-	 *                        can reference macros.
+	 *        "index.html", or "subdir/subpage.html")
+	 * @param maxWidth Maximum width for the thumbnail (or 0 for no maximum)
+	 * @param maxHeight Maximum height for the thumbnail (or 0 for no maximum)
+	 * @param wrapTemplate HTML code wrap the image element with. This will be
+	 *        typically used to create the thumbnail element. The HTML
+	 *        can reference macros.
 	 * @return the updated HTML content
 	 * @throws IOException when an image cannot be read or converted
 	 */
@@ -532,8 +539,8 @@ public class ImageTool {
 			final String currentDocument,
 			final int maxWidth,
 			final int maxHeight,
-			final String wrapTemplate
-	) throws IOException {
+			final String wrapTemplate)
+			throws IOException {
 
 		// basedir path
 		Path basedirPath = Paths.get(basedir).toAbsolutePath();
@@ -598,12 +605,12 @@ public class ImageTool {
 
 			// Replace macros in the wrap template
 			String wrapHtml = wrapTemplate
-				.replaceAll("%imgWidth%", String.valueOf(sourceWidth))
-				.replaceAll("%imgHeight%", String.valueOf(sourceHeight))
-				.replaceAll("%thumbWidth%", String.valueOf(thumbnailWidth))
-				.replaceAll("%thumbHeight%", String.valueOf(thumbnailHeight))
-				.replaceAll("%thumbSrc%", thumbnailSrc)
-				.replaceAll("%imgAlt%", imageAlt);
+					.replaceAll("%imgWidth%", String.valueOf(sourceWidth))
+					.replaceAll("%imgHeight%", String.valueOf(sourceHeight))
+					.replaceAll("%thumbWidth%", String.valueOf(thumbnailWidth))
+					.replaceAll("%thumbHeight%", String.valueOf(thumbnailHeight))
+					.replaceAll("%thumbSrc%", thumbnailSrc)
+					.replaceAll("%imgAlt%", imageAlt);
 
 			// Now wrap the IMG element with template
 			// If the IMG element is inside a PICTURE element, wrap the PICTURE element
@@ -618,6 +625,5 @@ public class ImageTool {
 		return body;
 
 	}
-
 
 }

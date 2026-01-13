@@ -57,8 +57,7 @@ public final class Helper {
 		// Write the result using system line separator
 		try (
 				BufferedReader reader = new BufferedReader(new StringReader(text));
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
-		) {
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				writer.write(line);
@@ -72,7 +71,7 @@ public final class Helper {
 	 * EPOCH.
 	 *
 	 * @param path
-	 *            Path to the file
+	 *        Path to the file
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
 	public static long getLastModifiedTime(final Path path) {
@@ -89,7 +88,7 @@ public final class Helper {
 	 * EPOCH.
 	 *
 	 * @param file
-	 *            File instance
+	 *        File instance
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
 	public static long getLastModifiedTime(final File file) {
@@ -101,28 +100,28 @@ public final class Helper {
 	 * EPOCH.
 	 *
 	 * @param filePathString
-	 *            Path to the file (as a String)
+	 *        Path to the file (as a String)
 	 * @return Milliseconds since EPOCH, or 0 (zero) if file does not exist
 	 */
 	public static long getLastModifiedTime(final String filePathString) {
 		return getLastModifiedTime(Paths.get(filePathString));
 	}
 
-		/**
-		 * Reads the content of a resource file and returns it as a String.
-		 *
-		 * @param resourcePath The path to the resource file
-		 * @return The content of the resource file as a String
-		 * @throws IOException If an I/O error occurs
-		 */
-		public static String readResourceAsString(final String resourcePath) throws IOException {
-				try (InputStream inputStream = Helper.class.getResourceAsStream(resourcePath)) {
-						if (inputStream == null) {
-								throw new IOException("Resource not found: " + resourcePath);
-						}
-						byte[] bytes = inputStream.readAllBytes();
-						return new String(bytes, StandardCharsets.UTF_8);
-				}
+	/**
+	 * Reads the content of a resource file and returns it as a String.
+	 *
+	 * @param resourcePath The path to the resource file
+	 * @return The content of the resource file as a String
+	 * @throws IOException If an I/O error occurs
+	 */
+	public static String readResourceAsString(final String resourcePath) throws IOException {
+		try (InputStream inputStream = Helper.class.getResourceAsStream(resourcePath)) {
+			if (inputStream == null) {
+				throw new IOException("Resource not found: " + resourcePath);
+			}
+			byte[] bytes = inputStream.readAllBytes();
+			return new String(bytes, StandardCharsets.UTF_8);
 		}
+	}
 
 }

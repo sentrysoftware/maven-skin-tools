@@ -56,9 +56,9 @@ import org.jsoup.parser.Tag;
 public class HtmlTool extends SafeConfig {
 
 	/** A list of all HTML heading classes (h1-6) */
-	private static final List<String> HEADINGS = Collections.unmodifiableList(
-			Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6"));
-
+	private static final List<String> HEADINGS = Collections
+			.unmodifiableList(
+					Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6"));
 
 	private String outputEncoding = "UTF-8";
 
@@ -97,13 +97,13 @@ public class HtmlTool extends SafeConfig {
 	 * Sets attribute to the given value on elements in HTML.
 	 *
 	 * @param body
-	 *            HTML content to set attributes on
+	 *        HTML content to set attributes on
 	 * @param selector
-	 *            CSS selector for elements to modify
+	 *        CSS selector for elements to modify
 	 * @param attributeKey
-	 *            Attribute name
+	 *        Attribute name
 	 * @param value
-	 *            Attribute value
+	 *        Attribute value
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 * @since 1.0
@@ -141,11 +141,11 @@ public class HtmlTool extends SafeConfig {
 	 * selector, since there can be more than one element.
 	 *
 	 * @param body
-	 *            HTML content to read attributes from
+	 *        HTML content to read attributes from
 	 * @param selector
-	 *            CSS selector for elements to find
+	 *        CSS selector for elements to find
 	 * @param attributeKey
-	 *            Attribute name
+	 *        Attribute name
 	 * @return Attribute values for all matching elements. If no elements are found, empty list is
 	 *         returned.
 	 * @since 1.0
@@ -167,13 +167,13 @@ public class HtmlTool extends SafeConfig {
 	 * Adds given class names to the elements in HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements to add classes to
+	 *        CSS selector for elements to add classes to
 	 * @param classNames
-	 *            Names of classes to add to the selected elements
+	 *        Names of classes to add to the selected elements
 	 * @param amount
-	 *            Maximum number of elements to modify
+	 *        Maximum number of elements to modify
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 * @since 1.0
@@ -200,11 +200,11 @@ public class HtmlTool extends SafeConfig {
 	 * Adds given class names to the elements in HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements to add classes to
+	 *        CSS selector for elements to add classes to
 	 * @param classNames
-	 *            Names of classes to add to the selected elements
+	 *        Names of classes to add to the selected elements
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 * @since 1.0
@@ -217,11 +217,11 @@ public class HtmlTool extends SafeConfig {
 	 * Adds given class to the elements in HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements to add the class to
+	 *        CSS selector for elements to add the class to
 	 * @param className
-	 *            Name of class to add to the selected elements
+	 *        Name of class to add to the selected elements
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 * @since 1.0
@@ -234,13 +234,13 @@ public class HtmlTool extends SafeConfig {
 	 * Wraps elements in HTML with the given HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements to wrap
+	 *        CSS selector for elements to wrap
 	 * @param wrapHtml
-	 *            HTML to use for wrapping the selected elements
+	 *        HTML to use for wrapping the selected elements
 	 * @param amount
-	 *            Maximum number of elements to modify
+	 *        Maximum number of elements to modify
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 * @since 1.0
@@ -265,13 +265,13 @@ public class HtmlTool extends SafeConfig {
 	 * Append HTML elements to specified elements in the given HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements that will get the appendice
+	 *        CSS selector for elements that will get the appendice
 	 * @param appendHtml
-	 *            HTML to append to the selected elements
+	 *        HTML to append to the selected elements
 	 * @param amount
-	 *            Maximum number of elements to modify
+	 *        Maximum number of elements to modify
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
@@ -291,18 +291,17 @@ public class HtmlTool extends SafeConfig {
 
 	}
 
-
 	/**
 	 * Prepend HTML elements to specified elements in the given HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements that will get the "pre-pendice"
+	 *        CSS selector for elements that will get the "pre-pendice"
 	 * @param prependHtml
-	 *            HTML to prepend to the selected elements
+	 *        HTML to prepend to the selected elements
 	 * @param amount
-	 *            Maximum number of elements to modify
+	 *        Maximum number of elements to modify
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
@@ -322,14 +321,13 @@ public class HtmlTool extends SafeConfig {
 
 	}
 
-
 	/**
 	 * Removes elements from HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements to remove
+	 *        CSS selector for elements to remove
 	 * @return HTML content with removed elements. If no elements are found, the original content is
 	 *         returned.
 	 * @since 1.0
@@ -350,13 +348,13 @@ public class HtmlTool extends SafeConfig {
 	 * Replace selected elements with specified elements in the given HTML.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @param selector
-	 *            CSS selector for elements that will get the appendice
+	 *        CSS selector for elements that will get the appendice
 	 * @param replaceHtml
-	 *            HTML to append to the selected elements
+	 *        HTML to append to the selected elements
 	 * @param amount
-	 *            Maximum number of elements to modify (-1 for unlimited)
+	 *        Maximum number of elements to modify (-1 for unlimited)
 	 * @return HTML content with modified elements. If no elements are found, the original content
 	 *         is returned.
 	 */
@@ -376,15 +374,14 @@ public class HtmlTool extends SafeConfig {
 
 	}
 
-
 	/**
 	 * Retrieves text content of the selected elements in HTML. Renders the element's text as it
 	 * would be displayed on the web page (including its children).
 	 *
 	 * @param body
-	 *            HTML content with the elements
+	 *        HTML content with the elements
 	 * @param selector
-	 *            CSS selector for elements to extract contents
+	 *        CSS selector for elements to extract contents
 	 * @return A list of element texts as rendered to display. Empty list if no elements are found.
 	 * @since 1.0
 	 */
@@ -406,7 +403,8 @@ public class HtmlTool extends SafeConfig {
 	 * <p>
 	 * The anchors are used to indicate positions within a HTML page. In HTML5, however, the
 	 * {@code name} attribute is no longer supported on {@code <a>}) tag. The positions within pages
-	 * are indicated using {@code id} attribute instead, e.g. {@code <h1 id="myheading">}.
+	 * are indicated using {@code id} attribute instead, e.g. {@code
+	 * <h1 id="myheading">}.
 	 * </p>
 	 * <p>
 	 * The method finds anchors inside, immediately before or after the heading tags and uses their
@@ -414,7 +412,7 @@ public class HtmlTool extends SafeConfig {
 	 * </p>
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @return HTML content with modified elements. Anchor names are used for adjacent headings, and
 	 *         anchor tags are removed. If no elements are found, the original content is returned.
 	 * @since 1.0
@@ -428,8 +426,12 @@ public class HtmlTool extends SafeConfig {
 		String nameA = "a[name]:not([href])";
 
 		// select all headings that have inner named anchor
-		List<Element> headingsInnerA = body.select(String.join(", ",
-				concat(headNoIds, ":has(" + nameA + ")", true)));
+		List<Element> headingsInnerA = body
+				.select(
+						String
+								.join(
+										", ",
+										concat(headNoIds, ":has(" + nameA + ")", true)));
 
 		for (Element heading : headingsInnerA) {
 			List<Element> anchors = heading.select(nameA);
@@ -440,8 +442,12 @@ public class HtmlTool extends SafeConfig {
 		}
 
 		// select all headings that have a preceding named anchor
-		List<Element> headingsPreA = body.select(String.join(", ",
-				concat(headNoIds, nameA + " + ", false)));
+		List<Element> headingsPreA = body
+				.select(
+						String
+								.join(
+										", ",
+										concat(headNoIds, nameA + " + ", false)));
 
 		for (Element heading : headingsPreA) {
 			Element anchor = heading.previousElementSibling();
@@ -453,8 +459,12 @@ public class HtmlTool extends SafeConfig {
 		// select all headings that are followed by a named anchor
 		// no selector available for that, so first select the anchors
 		// then retrieve the headings
-		List<Element> anchorsPreH = body.select(String.join(", ",
-				concat(headNoIds, " + " + nameA, true)));
+		List<Element> anchorsPreH = body
+				.select(
+						String
+								.join(
+										", ",
+										concat(headNoIds, " + " + nameA, true)));
 
 		for (Element anchor : anchorsPreH) {
 			Element heading = anchor.previousElementSibling();
@@ -486,18 +496,17 @@ public class HtmlTool extends SafeConfig {
 		}
 	}
 
-
 	/**
 	 * Utility method to concatenate a String to a list of Strings. The text can be either appended
 	 * or prepended.
 	 *
 	 * @param elements
-	 *            list of elements to append/prepend the text to
+	 *        list of elements to append/prepend the text to
 	 * @param text
-	 *            the given text to append/prepend
+	 *        the given text to append/prepend
 	 * @param append
-	 *            if {@code true}, text will be appended to the elements. If {@code false}, it will
-	 *            be prepended
+	 *        if {@code true}, text will be appended to the elements. If {@code false}, it will
+	 *        be prepended
 	 * @return list of elements with the text appended/prepended
 	 * @since 1.0
 	 */
@@ -511,7 +520,6 @@ public class HtmlTool extends SafeConfig {
 		return concats;
 	}
 
-
 	/**
 	 * Transforms the given HTML content by adding IDs to all heading elements ({@code h1-6}) that
 	 * do not have one.
@@ -522,7 +530,7 @@ public class HtmlTool extends SafeConfig {
 	 * </p>
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @return HTML content with all heading elements having {@code id} attributes. If all headings
 	 *         were with IDs already, the original content is returned.
 	 * @since 1.0
@@ -537,7 +545,8 @@ public class HtmlTool extends SafeConfig {
 		}
 
 		// select all headings that do not have an ID
-		List<Element> headingsNoId = body.select("h1:not([id]), h2:not([id]), h3:not([id]), h4:not([id]), h5:not([id]), h6:not([id])");
+		List<Element> headingsNoId = body
+				.select("h1:not([id]), h2:not([id]), h3:not([id]), h4:not([id]), h5:not([id]), h6:not([id])");
 
 		for (Element heading : headingsNoId) {
 
@@ -572,7 +581,7 @@ public class HtmlTool extends SafeConfig {
 	 * </p>
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @return HTML content fixed IDs.
 	 * @since 1.0
 	 */
@@ -605,11 +614,12 @@ public class HtmlTool extends SafeConfig {
 	}
 
 	/**
-	 * Fixes table heads: wraps rows with {@code <th>} (table heading) elements into {@code <thead>}
+	 * Fixes table heads: wraps rows with {@code
+	 * <th>} (table heading) elements into {@code <thead>}
 	 * element if they are currently in {@code <tbody>}.
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @return HTML content with all table heads fixed. If all heads were correct, the original
 	 *         content is returned.
 	 * @since 1.0
@@ -636,7 +646,6 @@ public class HtmlTool extends SafeConfig {
 
 		return body;
 	}
-
 
 	/**
 	 * Regex that matches with all non-latin chars... and dash
@@ -672,7 +681,7 @@ public class HtmlTool extends SafeConfig {
 	 * proper HTTPS URLs
 	 *
 	 * @param body
-	 *            HTML content to modify
+	 *        HTML content to modify
 	 * @return HTML content fixed linkss
 	 */
 	public Element fixProtocolRelativeUrls(final Element body) {
@@ -697,6 +706,5 @@ public class HtmlTool extends SafeConfig {
 		// Return result
 		return body;
 	}
-
 
 }

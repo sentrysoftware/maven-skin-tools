@@ -42,19 +42,18 @@ class HelperTest {
 		assertEquals(
 				Helper.getLastModifiedTime(testFile),
 				Helper.getLastModifiedTime(testFile.getAbsolutePath()),
-				"Value obtained from String or File must be identical"
-		);
+				"Value obtained from String or File must be identical");
 
 		assertEquals(
 				Helper.getLastModifiedTime(testFile),
 				Helper.getLastModifiedTime(Paths.get(testFile.toURI())),
-				"Value obtained from Path or File must be identical"
-		);
+				"Value obtained from Path or File must be identical");
 
 		long timeDiff = Helper.getLastModifiedTime(testFile) - timestamp;
-		assertTrue(timeDiff >= -1000, "File should be marked as modified after timestamp (timeDiff " + timeDiff + " should be > 0 ms)");
+		assertTrue(
+				timeDiff >= -1000,
+				"File should be marked as modified after timestamp (timeDiff " + timeDiff + " should be > 0 ms)");
 
 	}
-
 
 }
