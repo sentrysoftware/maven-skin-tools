@@ -398,13 +398,12 @@ public class HtmlTool extends SafeConfig {
 	}
 
 	/**
-	 * Transforms the given HTML content by moving anchor ({@code <a name="myheading">}) names to
+	 * Transforms the given HTML content by moving anchor ({@code &lt;a name="myheading"&gt;}) names to
 	 * IDs for heading elements.
 	 * <p>
 	 * The anchors are used to indicate positions within a HTML page. In HTML5, however, the
-	 * {@code name} attribute is no longer supported on {@code <a>}) tag. The positions within pages
-	 * are indicated using {@code id} attribute instead, e.g. {@code
-	 * <h1 id="myheading">}.
+	 * {@code name} attribute is no longer supported on {@code &lt;a&gt;}) tag. The positions within pages
+	 * are indicated using {@code id} attribute instead, e.g. {@code &lt;h1 id="myheading"&gt;}.
 	 * </p>
 	 * <p>
 	 * The method finds anchors inside, immediately before or after the heading tags and uses their
@@ -614,9 +613,8 @@ public class HtmlTool extends SafeConfig {
 	}
 
 	/**
-	 * Fixes table heads: wraps rows with {@code
-	 * <th>} (table heading) elements into {@code <thead>}
-	 * element if they are currently in {@code <tbody>}.
+	 * Fixes table heads: wraps rows with {@code &lt;th&gt;} (table heading) elements into {@code &lt;thead&gt;}
+	 * element if they are currently in {@code &lt;tbody&gt;}.
 	 *
 	 * @param body
 	 *        HTML content to modify
