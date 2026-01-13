@@ -31,8 +31,7 @@ import org.junit.jupiter.api.Test;
 class IndexToolTest {
 
 	@BeforeEach
-	void setUp() throws Exception {
-	}
+	void setUp() throws Exception {}
 
 	@Test
 	void testBuildElasticLunrIndex() throws Exception {
@@ -47,9 +46,10 @@ class IndexToolTest {
 
 		// Get a new IndexTool
 		IndexTool indexTool = new IndexTool();
-		
+
 		// Add it to the index, twice! (it's supposed to be updated properly and the page present only once)
-		indexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText + " dragon");
+		indexTool
+				.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText + " dragon");
 		indexTool.buildElasticLunrIndex(indexPath.toString(), "agent.html", "Agent", "testagent", studioAgentText);
 
 		// And now add another fake entry
@@ -65,6 +65,5 @@ class IndexToolTest {
 		// Delete the temporary file
 		Files.delete(indexPath);
 	}
-
 
 }

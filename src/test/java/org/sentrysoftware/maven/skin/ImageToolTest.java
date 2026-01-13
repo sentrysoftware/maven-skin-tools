@@ -40,16 +40,31 @@ class ImageToolTest {
 
 	@Test
 	void testGetExtension() {
-		assertEquals("jpg", ImageTool.getExtension(new File("/tmp/test.jpg")), "Extension of regular file must be retrieved");
+		assertEquals(
+				"jpg",
+				ImageTool.getExtension(new File("/tmp/test.jpg")),
+				"Extension of regular file must be retrieved");
 		assertEquals("", ImageTool.getExtension(new File("/tmp/test")), "File with no extension must return empty string");
-		assertEquals("", ImageTool.getExtension(new File("/tmp/test.")), "File with empty extension must return empty string");
+		assertEquals(
+				"",
+				ImageTool.getExtension(new File("/tmp/test.")),
+				"File with empty extension must return empty string");
 	}
 
 	@Test
 	void testGetNameWithoutExtension() {
-		assertEquals("test", ImageTool.getNameWithoutExtension(new File("/tmp/test.jpg")), "Extension of regular file must be retrieved");
-		assertEquals("test", ImageTool.getNameWithoutExtension(new File("/tmp/test")), "File with no extension must return name");
-		assertEquals("", ImageTool.getNameWithoutExtension(new File("/tmp/.test")), "File with no name (.ext) must return empty string");
+		assertEquals(
+				"test",
+				ImageTool.getNameWithoutExtension(new File("/tmp/test.jpg")),
+				"Extension of regular file must be retrieved");
+		assertEquals(
+				"test",
+				ImageTool.getNameWithoutExtension(new File("/tmp/test")),
+				"File with no extension must return name");
+		assertEquals(
+				"",
+				ImageTool.getNameWithoutExtension(new File("/tmp/.test")),
+				"File with no name (.ext) must return empty string");
 	}
 
 	@Test
@@ -61,7 +76,11 @@ class ImageToolTest {
 
 			// Create a temporary file (on the filesystem)
 			Path tempImagePath = Files.createTempFile("testImageThumbnail", imageTestName);
-			Files.copy(ImageToolTest.class.getResourceAsStream("/" + imageTestName), tempImagePath, StandardCopyOption.REPLACE_EXISTING);
+			Files
+					.copy(
+							ImageToolTest.class.getResourceAsStream("/" + imageTestName),
+							tempImagePath,
+							StandardCopyOption.REPLACE_EXISTING);
 			tempImagePath.toFile().deleteOnExit();
 
 			// Create the thumbnail
@@ -70,7 +89,9 @@ class ImageToolTest {
 
 			// Check the file name result
 			String expectedName = ImageTool.getNameWithoutExtension(tempImagePath.toFile()) + "-tn.jpg";
-			assertTrue(resultFile.getName().endsWith(expectedName), "Thumbnail name must contain the mark and finish with the same extension");
+			assertTrue(
+					resultFile.getName().endsWith(expectedName),
+					"Thumbnail name must contain the mark and finish with the same extension");
 
 			assertTrue(resultFile.exists(), "The thumbnail file has been created");
 			BufferedImage resultImage = ImageIO.read(resultFile);
@@ -89,7 +110,11 @@ class ImageToolTest {
 
 			// Create a temporary file (on the filesystem)
 			Path tempImagePath = Files.createTempFile("testImageThumbnail", imageTestName);
-			Files.copy(ImageToolTest.class.getResourceAsStream("/" + imageTestName), tempImagePath, StandardCopyOption.REPLACE_EXISTING);
+			Files
+					.copy(
+							ImageToolTest.class.getResourceAsStream("/" + imageTestName),
+							tempImagePath,
+							StandardCopyOption.REPLACE_EXISTING);
 			tempImagePath.toFile().deleteOnExit();
 
 			// Create the thumbnail
@@ -98,7 +123,9 @@ class ImageToolTest {
 
 			// Check the file name result
 			String expectedName = ImageTool.getNameWithoutExtension(tempImagePath.toFile()) + "-tn.jpg";
-			assertTrue(resultFile.getName().endsWith(expectedName), "Thumbnail name must contain the mark and finish with the same extension");
+			assertTrue(
+					resultFile.getName().endsWith(expectedName),
+					"Thumbnail name must contain the mark and finish with the same extension");
 
 			assertTrue(resultFile.exists(), "The thumbnail file has been created");
 			BufferedImage resultImage = ImageIO.read(resultFile);
@@ -117,7 +144,11 @@ class ImageToolTest {
 
 			// Create a temporary file (on the filesystem)
 			Path tempImagePath = Files.createTempFile("testImageWebp", imageTestName);
-			Files.copy(ImageToolTest.class.getResourceAsStream("/" + imageTestName), tempImagePath, StandardCopyOption.REPLACE_EXISTING);
+			Files
+					.copy(
+							ImageToolTest.class.getResourceAsStream("/" + imageTestName),
+							tempImagePath,
+							StandardCopyOption.REPLACE_EXISTING);
 
 			// Save the file as webp
 			File webpFile = ImageTool.saveImageFileAsWebp(tempImagePath.toFile());

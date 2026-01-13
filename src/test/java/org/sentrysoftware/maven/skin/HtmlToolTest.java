@@ -80,13 +80,15 @@ class HtmlToolTest {
 	void testReplace() {
 		{
 			// Replace all
-			String result = trimWhites(HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", -1));
+			String result = trimWhites(
+					HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", -1));
 			assertTrue(result.contains("<spanclass=\"my-input\"></span>"));
 			assertFalse(result.contains("<input"));
 		}
 		{
 			// Replace just one (there will be 1 remaining <input>)
-			String result = trimWhites(HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", 1));
+			String result = trimWhites(
+					HTML_TOOL.replace(HTML_ELEMENT.clone(), "input", "<span class=\"my-input\"></span>", 1));
 			assertTrue(result.contains("<spanclass=\"my-input\"></span>"));
 			assertTrue(result.contains("<input"));
 		}
@@ -94,7 +96,8 @@ class HtmlToolTest {
 
 	@Test
 	void testWrap() {
-		String result = trimWhites(HTML_TOOL.wrap(GENERAL_HTML_ELEMENT.clone(), "ul#toc", "<div class='toc-inline-container hidden-lg'>", 1));
+		String result = trimWhites(
+				HTML_TOOL.wrap(GENERAL_HTML_ELEMENT.clone(), "ul#toc", "<div class='toc-inline-container hidden-lg'>", 1));
 		assertTrue(result.contains("<divclass=\"toc-inline-containerhidden-lg\"><ulid=\"toc\">"));
 	}
 
@@ -107,8 +110,12 @@ class HtmlToolTest {
 		result = trimWhites(HTML_TOOL.ensureHeadingIds(HTML_TOOL.parseContent("<h3>test</h3><h4>Test</h4><h4>Test</h4>")));
 		assertEquals("<h3id=\"test\">test</h3><h4id=\"test_2\">Test</h4><h4id=\"test_3\">Test</h4>", result);
 
-		result = trimWhites(HTML_TOOL.ensureHeadingIds(HTML_TOOL.parseContent("<h3>abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>")));
-		assertEquals("<h3id=\"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx\">abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>", result);
+		result = trimWhites(
+				HTML_TOOL
+						.ensureHeadingIds(HTML_TOOL.parseContent("<h3>abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>")));
+		assertEquals(
+				"<h3id=\"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx\">abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</h3>",
+				result);
 
 	}
 
@@ -149,7 +156,10 @@ class HtmlToolTest {
 
 	@Test
 	void testFixTableHeads() {
-		String result = trimWhites(HTML_TOOL.fixTableHeads(HTML_TOOL.parseContent("<table><tbody><tr><th>head</th></tr><tr><td>body</td></tr></tbody></table>")));
+		String result = trimWhites(
+				HTML_TOOL
+						.fixTableHeads(
+								HTML_TOOL.parseContent("<table><tbody><tr><th>head</th></tr><tr><td>body</td></tr></tbody></table>")));
 		assertEquals("<table><thead><tr><th>head</th></tr></thead><tbody><tr><td>body</td></tr></tbody></table>", result);
 	}
 
@@ -170,7 +180,9 @@ class HtmlToolTest {
 		List<String> result = HTML_TOOL.getAttr(AGENT_HTML_ELEMENT.clone(), "a", "href");
 		assertNotEquals(0, result.size());
 		assertEquals("#Related_Topics", result.get(0));
-		assertEquals("//docs.bmc.com/docs/PATROLAgent/113/integration-variables-766670137.html", result.get(result.size() - 1));
+		assertEquals(
+				"//docs.bmc.com/docs/PATROLAgent/113/integration-variables-766670137.html",
+				result.get(result.size() - 1));
 	}
 
 	@Test
@@ -221,6 +233,7 @@ class HtmlToolTest {
 
 	/**
 	 * Remove all white characters (\\s regex, i.e. spaces, tabs and new lines)
+	 *
 	 * @param source The text from which we remove white spaces
 	 * @return the same text without any white spaces
 	 */
@@ -230,6 +243,7 @@ class HtmlToolTest {
 
 	/**
 	 * Remove all white characters (\\s regex, i.e. spaces, tabs and new lines)
+	 *
 	 * @param element The HTML Element to parse
 	 * @return the HTML source without any white spaces
 	 */
