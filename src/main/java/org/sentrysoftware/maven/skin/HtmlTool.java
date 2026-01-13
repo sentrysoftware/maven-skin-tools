@@ -35,7 +35,6 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.SafeConfig;
 import org.apache.velocity.tools.generic.ValueParser;
 import org.jsoup.Jsoup;
-import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
@@ -425,8 +424,8 @@ public class HtmlTool extends SafeConfig {
 		String nameA = "a[name]:not([href])";
 
 		// select all headings that have inner named anchor
-		List<Element> headingsInnerA = body.select(StringUtil.join(
-				concat(headNoIds, ":has(" + nameA + ")", true), ", "));
+		List<Element> headingsInnerA = body.select(String.join(", ",
+				concat(headNoIds, ":has(" + nameA + ")", true)));
 
 		for (Element heading : headingsInnerA) {
 			List<Element> anchors = heading.select(nameA);
@@ -437,8 +436,8 @@ public class HtmlTool extends SafeConfig {
 		}
 
 		// select all headings that have a preceding named anchor
-		List<Element> headingsPreA = body.select(StringUtil.join(
-				concat(headNoIds, nameA + " + ", false), ", "));
+		List<Element> headingsPreA = body.select(String.join(", ",
+				concat(headNoIds, nameA + " + ", false)));
 
 		for (Element heading : headingsPreA) {
 			Element anchor = heading.previousElementSibling();
@@ -450,8 +449,8 @@ public class HtmlTool extends SafeConfig {
 		// select all headings that are followed by a named anchor
 		// no selector available for that, so first select the anchors
 		// then retrieve the headings
-		List<Element> anchorsPreH = body.select(StringUtil.join(
-				concat(headNoIds, " + " + nameA, true), ", "));
+		List<Element> anchorsPreH = body.select(String.join(", ",
+				concat(headNoIds, " + " + nameA, true)));
 
 		for (Element anchor : anchorsPreH) {
 			Element heading = anchor.previousElementSibling();
