@@ -129,7 +129,7 @@ public class HtmlTool extends SafeConfig {
 	public Element parseContent(final String content) {
 		// Convert XHTML-style self-closing anchor tags to properly closed tags
 		// because newer versions of Jsoup don't treat <a .../> as self-closing
-		String processedContent = content.replaceAll("<a\\s+([^>]*?)\\s*/>", "<a $1></a>");
+		String processedContent = content.replaceAll("<a\\s*([^>]*?)\\s*/>", "<a $1></a>");
 		
 		Document doc = Jsoup.parseBodyFragment(processedContent);
 		doc.outputSettings().charset(outputEncoding);
