@@ -26,6 +26,7 @@
 		<tool key="htmlTool" class="org.sentrysoftware.maven.skin.HtmlTool" />
 		<tool key="indexTool" class="org.sentrysoftware.maven.skin.IndexTool" />
 		<tool key="imageTool" class="org.sentrysoftware.maven.skin.ImageTool" />
+		<tool key="aiIndexTool" class="org.sentrysoftware.maven.skin.AIIndexTool" />
 
 		<!-- Additional Velocity Tools -->
 		<!-- Tools available in https://velocity.apache.org/tools/3.1/tools-summary.html -->

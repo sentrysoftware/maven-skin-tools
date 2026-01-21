@@ -44,6 +44,7 @@ This allows the Maven Skin and [Velocity-processed pages in a Maven Site](https:
 | `#[[$htmlTool]]#` | To manipulate HTML documents or fragments | [HtmlTool](apidocs/org/sentrysoftware/maven/skin/HtmlTool.html) |
 | `#[[$imageTool]]#` | To manipulate images | [ImageTool](apidocs/org/sentrysoftware/maven/skin/ImageTool.html) |
 | `#[[$indexTool]]#` | To create search indexes | [IndexTool](apidocs/org/sentrysoftware/maven/skin/IndexTool.html) |
+| `#[[$aiIndexTool]]#` | To create AI-ready Markdown files from HTML documentation | [AIIndexTool](apidocs/org/sentrysoftware/maven/skin/AIIndexTool.html) |
 
 The above tools are designed to be used only in the Velocity template of a [Maven Site Skin](https://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html) as in the example below:
 
