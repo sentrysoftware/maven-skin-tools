@@ -139,7 +139,7 @@ class AIIndexToolTest {
 	void testConvertToMarkdown() throws Exception {
 		// Create a markdown file in a subdirectory
 		Path subdir = tempDir.resolve("subdir");
-		Path mdPath = subdir.resolve("feature.md");
+		Path mdPath = subdir.resolve("feature.html.md");
 		String outputDirectory = tempDir.toString();
 		String docPath = "subdir/feature.html";
 		Date publishDate = new Date(1736467200000L); // 2025-01-10
@@ -157,8 +157,8 @@ class AIIndexToolTest {
 		String linkElement = aiIndexTool
 				.convertToMarkdown(outputDirectory, docPath, doc.head(), doc.body(), publishDate, projectUrl);
 
-		// Verify the returned link element (href is just the filename, relative to current doc)
-		assertEquals("<link rel=\"alternate\" type=\"text/markdown\" href=\"feature.md\">", linkElement);
+		// Verify the returned link element (href is just the filename, relative to current doc, per llmstxt.org convention)
+		assertEquals("<link rel=\"alternate\" type=\"text/markdown\" href=\"feature.html.md\">", linkElement);
 
 		// Verify the file was created
 		assertTrue(Files.exists(mdPath), "Markdown file should be created");
@@ -182,7 +182,7 @@ class AIIndexToolTest {
 	@Test
 	void testConvertToMarkdownWithoutMetaTags() throws Exception {
 		// Test creating markdown without meta tags (no frontmatter block)
-		Path mdPath = tempDir.resolve("simple.md");
+		Path mdPath = tempDir.resolve("simple.html.md");
 		String outputDirectory = tempDir.toString();
 		String docPath = "simple.html";
 
@@ -194,8 +194,8 @@ class AIIndexToolTest {
 
 		String linkElement = aiIndexTool.convertToMarkdown(outputDirectory, docPath, doc.head(), doc.body(), null, null);
 
-		// Verify the returned link element (href is just the filename)
-		assertEquals("<link rel=\"alternate\" type=\"text/markdown\" href=\"simple.md\">", linkElement);
+		// Verify the returned link element (href is just the filename, per llmstxt.org convention)
+		assertEquals("<link rel=\"alternate\" type=\"text/markdown\" href=\"simple.html.md\">", linkElement);
 
 		// Verify the file was created
 		assertTrue(Files.exists(mdPath), "Markdown file should be created");
@@ -230,7 +230,7 @@ class AIIndexToolTest {
 	@Test
 	void testConvertToMarkdownUpdatesExistingFile() throws Exception {
 		// Test that the tool updates existing files
-		Path mdPath = tempDir.resolve("update.md");
+		Path mdPath = tempDir.resolve("update.html.md");
 		String outputDirectory = tempDir.toString();
 		String docPath = "update.html";
 
@@ -260,7 +260,7 @@ class AIIndexToolTest {
 	@Test
 	void testConvertToMarkdownWithRealHtmlContent() throws Exception {
 		// Test with content similar to real documentation
-		Path mdPath = tempDir.resolve("docs").resolve("guide.md");
+		Path mdPath = tempDir.resolve("docs").resolve("guide.html.md");
 		String outputDirectory = tempDir.toString();
 		String docPath = "docs/guide.html";
 
@@ -323,7 +323,7 @@ class AIIndexToolTest {
 		assertTrue(content.contains("# My Project"));
 		assertTrue(content.contains("> A great project for doing things"));
 		assertTrue(content.contains("## Documentation"));
-		assertTrue(content.contains("- [Getting Started](docs/getting-started.md)"));
+		assertTrue(content.contains("- [Getting Started](docs/getting-started.html.md)"));
 	}
 
 	@Test
@@ -352,8 +352,8 @@ class AIIndexToolTest {
 						"Documentation");
 
 		String content = Files.readString(llmsTxtPath);
-		assertTrue(content.contains("- [Page 1](docs/page1.md)"));
-		assertTrue(content.contains("- [Page 2](docs/page2.md)"));
+		assertTrue(content.contains("- [Page 1](docs/page1.html.md)"));
+		assertTrue(content.contains("- [Page 2](docs/page2.html.md)"));
 		// Should only have one Documentation section
 		assertEquals(1, content.split("## Documentation").length - 1);
 	}
@@ -384,8 +384,8 @@ class AIIndexToolTest {
 		String content = Files.readString(llmsTxtPath);
 		assertTrue(content.contains("## Documentation"));
 		assertTrue(content.contains("## API"));
-		assertTrue(content.contains("- [User Guide](docs/guide.md)"));
-		assertTrue(content.contains("- [API Reference](api/index.md)"));
+		assertTrue(content.contains("- [User Guide](docs/guide.html.md)"));
+		assertTrue(content.contains("- [API Reference](api/index.html.md)"));
 	}
 
 	@Test
@@ -414,10 +414,10 @@ class AIIndexToolTest {
 						"Documentation");
 
 		String content = Files.readString(llmsTxtPath);
-		assertTrue(content.contains("- [New Title](docs/page.md)"));
+		assertTrue(content.contains("- [New Title](docs/page.html.md)"));
 		assertFalse(content.contains("Old Title"));
 		// Should only have one entry for this path
-		assertEquals(1, content.split("docs/page.md").length - 1);
+		assertEquals(1, content.split("docs/page.html.md").length - 1);
 	}
 
 	@Test
@@ -436,7 +436,7 @@ class AIIndexToolTest {
 
 		String content = Files.readString(llmsTxtPath);
 		assertTrue(content.contains("## Other"));
-		assertTrue(content.contains("- [Miscellaneous Page](misc/page.md)"));
+		assertTrue(content.contains("- [Miscellaneous Page](misc/page.html.md)"));
 	}
 
 	@Test
@@ -455,7 +455,7 @@ class AIIndexToolTest {
 
 		String content = Files.readString(llmsTxtPath);
 		assertTrue(content.contains("## Other"));
-		assertTrue(content.contains("- [Miscellaneous Page](misc/page.md)"));
+		assertTrue(content.contains("- [Miscellaneous Page](misc/page.html.md)"));
 	}
 
 	@Test
@@ -488,7 +488,7 @@ class AIIndexToolTest {
 		assertTrue(content.contains("- [Existing Page](existing.html)"));
 		// New content should be added
 		assertTrue(content.contains("## New Section"));
-		assertTrue(content.contains("- [New Page](new/page.md)"));
+		assertTrue(content.contains("- [New Page](new/page.html.md)"));
 	}
 
 	@Test
@@ -554,7 +554,47 @@ class AIIndexToolTest {
 						"Section");
 
 		String content = Files.readString(llmsTxtPath);
-		assertTrue(content.contains("- [docs/my-page.html](docs/my-page.md)"));
+		assertTrue(content.contains("- [docs/my-page.html](docs/my-page.html.md)"));
+	}
+
+	@Test
+	void testUpdateLlmsTxtWithAbsoluteUrls() throws Exception {
+		// Test that absolute URLs are generated when projectUrl is provided
+		Path llmsTxtPath = tempDir.resolve("llms.txt");
+
+		aiIndexTool
+				.updateLlmsTxt(
+						llmsTxtPath.toString(),
+						"docs/getting-started.html",
+						"Getting Started",
+						"My Project",
+						"A great project",
+						"Documentation",
+						"https://example.com/myproject");
+
+		String content = Files.readString(llmsTxtPath);
+		assertTrue(content.contains("# My Project"));
+		assertTrue(content.contains("## Documentation"));
+		assertTrue(content.contains("- [Getting Started](https://example.com/myproject/docs/getting-started.html.md)"));
+	}
+
+	@Test
+	void testUpdateLlmsTxtWithAbsoluteUrlsTrailingSlash() throws Exception {
+		// Test that absolute URLs work correctly when projectUrl has trailing slash
+		Path llmsTxtPath = tempDir.resolve("llms.txt");
+
+		aiIndexTool
+				.updateLlmsTxt(
+						llmsTxtPath.toString(),
+						"api/reference.html",
+						"API Reference",
+						"My Project",
+						"A great project",
+						"API",
+						"https://example.com/myproject/");
+
+		String content = Files.readString(llmsTxtPath);
+		assertTrue(content.contains("- [API Reference](https://example.com/myproject/api/reference.html.md)"));
 	}
 
 	@Test
@@ -618,6 +658,44 @@ class AIIndexToolTest {
 		assertTrue(result.contains("## Section A"));
 		assertTrue(result.contains("- [Link 1](link1.html)"));
 		assertTrue(result.contains("- [Link 2](link2.html)"));
+	}
+
+	@Test
+	void testBuildLlmsTxtWithMultiLineDescription() {
+		// Test that multi-line descriptions are properly formatted with > on each line
+		AIIndexTool.LlmsTxtContent content = new AIIndexTool.LlmsTxtContent();
+		content.setProjectName("My Project");
+		content.setProjectDescription("First line of description.\nSecond line of description.\nThird line.");
+		content.getSections().put("Docs", new java.util.ArrayList<>());
+
+		String result = aiIndexTool.buildLlmsTxt(content);
+
+		assertTrue(result.contains("# My Project"));
+		assertTrue(result.contains("> First line of description.\n"));
+		assertTrue(result.contains("> Second line of description.\n"));
+		assertTrue(result.contains("> Third line.\n"));
+		// Ensure we don't have improperly formatted blockquotes (lines without >)
+		assertFalse(result.contains("\nSecond line"));
+		assertFalse(result.contains("\nThird line."));
+	}
+
+	@Test
+	void testParseLlmsTxtWithMultiLineDescription() {
+		// Test parsing multi-line blockquote descriptions
+		String content = "# Test Project\n\n" +
+				"> First line of description.\n" +
+				"> Second line of description.\n" +
+				"> Third line.\n\n" +
+				"## Section One\n\n" +
+				"- [Title 1](path1.html)\n";
+
+		AIIndexTool.LlmsTxtContent parsed = aiIndexTool.parseLlmsTxt(content);
+
+		assertEquals("Test Project", parsed.getProjectName());
+		assertEquals(
+				"First line of description.\nSecond line of description.\nThird line.",
+				parsed.getProjectDescription());
+		assertEquals(1, parsed.getSections().size());
 	}
 
 }
