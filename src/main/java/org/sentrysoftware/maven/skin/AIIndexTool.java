@@ -93,14 +93,14 @@ public class AIIndexTool extends SafeConfig {
 	 * @param outputDirectory Actual root directory of the site on the file system
 	 * @param docPath Logical path to the document relative to outputDirectory
 	 *        (e.g., "subdir/feature.html"), the .md file will be created at the
-	 *        same location with .md extension
+	 *        same location with .html.md extension (per llmstxt.org convention)
 	 * @param headElement The HTML head element (containing meta tags)
 	 * @param bodyElement The HTML body element
 	 * @param publishDate The publication date for the document (used for date_published
 	 *        and date_modified frontmatter fields)
 	 * @param projectUrl The base URL of the project site (used to build canonical_url)
 	 * @return An HTML link element for the alternate Markdown version, e.g.
-	 *         {@code <link rel="alternate" type="text/markdown" href="/docs/page.md">},
+	 *         {@code <link rel="alternate" type="text/markdown" href="/docs/page.html.md">},
 	 *         or an empty string if conversion fails
 	 */
 	public String convertToMarkdown(
@@ -116,8 +116,8 @@ public class AIIndexTool extends SafeConfig {
 		}
 
 		try {
-			// Calculate the Markdown file path (replace .html with .md)
-			String mdRelativePath = docPath.replaceFirst("\\.html$", ".md");
+			// Calculate the Markdown file path (append .md to keep .html.md per llmstxt.org convention)
+			String mdRelativePath = docPath.replaceFirst("\\.html$", ".html.md");
 			Path markdownPath = Paths.get(outputDirectory, mdRelativePath);
 
 			// Calculate the href for the link element (just the filename, relative to current doc)
@@ -251,6 +251,11 @@ public class AIIndexTool extends SafeConfig {
 	 * links to documentation pages. This method is typically called for each generated
 	 * HTML file during site generation.
 	 * </p>
+	 * <p>
+	 * This is a convenience method that uses relative paths for links.
+	 * Use {@link #updateLlmsTxt(String, String, String, String, String, String, String)}
+	 * to specify a project URL for absolute links.
+	 * </p>
 	 *
 	 * @param llmsTxtPath Path to the llms.txt file
 	 * @param docPath Path relative to the root of the site (e.g., "subdir/page.html")
@@ -267,6 +272,35 @@ public class AIIndexTool extends SafeConfig {
 			final String projectName,
 			final String projectDescription,
 			final String section) {
+		updateLlmsTxt(llmsTxtPath, docPath, docTitle, projectName, projectDescription, section, null);
+	}
+
+	/**
+	 * Updates or creates an llms.txt file by adding or updating a documentation entry.
+	 * <p>
+	 * The llms.txt file follows a specific Markdown format with sections containing
+	 * links to documentation pages. This method is typically called for each generated
+	 * HTML file during site generation.
+	 * </p>
+	 *
+	 * @param llmsTxtPath Path to the llms.txt file
+	 * @param docPath Path relative to the root of the site (e.g., "subdir/page.html")
+	 * @param docTitle Title of the document
+	 * @param projectName Name of the project (used in the H1 header)
+	 * @param projectDescription Description of the project (used in the blockquote)
+	 * @param section Name of the section where this entry should be placed;
+	 *        if null or empty, the entry is placed in the "Other" section
+	 * @param projectUrl The base URL of the project site (used to build absolute URLs
+	 *        for the links); if null or empty, relative paths are used
+	 */
+	public void updateLlmsTxt(
+			final String llmsTxtPath,
+			final String docPath,
+			final String docTitle,
+			final String projectName,
+			final String projectDescription,
+			final String section,
+			final String projectUrl) {
 
 		if (llmsTxtPath == null || llmsTxtPath.isEmpty() || docPath == null || docPath.isEmpty()) {
 			return;
@@ -299,21 +333,30 @@ public class AIIndexTool extends SafeConfig {
 			// Get or create the section
 			List<LinkEntry> sectionEntries = content.getSections().computeIfAbsent(targetSection, k -> new ArrayList<>());
 
-			// Convert docPath from .html to .md for the link
-			String mdDocPath = docPath.replaceFirst("\\.html$", ".md");
+			// Convert docPath to .html.md for the link (per llmstxt.org convention)
+			String mdDocPath = docPath.replaceFirst("\\.html$", ".html.md");
+
+			// Build absolute URL if projectUrl is provided
+			String linkPath;
+			if (projectUrl != null && !projectUrl.isEmpty()) {
+				String baseUrl = projectUrl.endsWith("/") ? projectUrl : projectUrl + "/";
+				linkPath = baseUrl + mdDocPath.replace("\\", "/");
+			} else {
+				linkPath = mdDocPath;
+			}
 
 			// Update or add the entry
 			String title = docTitle != null ? docTitle : docPath;
 			boolean found = false;
 			for (LinkEntry entry : sectionEntries) {
-				if (entry.getPath().equals(mdDocPath)) {
+				if (entry.getPath().equals(linkPath)) {
 					entry.setTitle(title);
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				sectionEntries.add(new LinkEntry(title, mdDocPath));
+				sectionEntries.add(new LinkEntry(title, linkPath));
 			}
 
 			// Ensure parent directories exist
@@ -356,9 +399,14 @@ public class AIIndexTool extends SafeConfig {
 				continue;
 			}
 
-			// Parse project description (blockquote)
-			if (trimmedLine.startsWith("> ") && result.getProjectDescription().isEmpty()) {
-				result.setProjectDescription(trimmedLine.substring(2).trim());
+			// Parse project description (blockquote) - may span multiple lines
+			if (trimmedLine.startsWith("> ")) {
+				String descLine = trimmedLine.substring(2);
+				if (result.getProjectDescription().isEmpty()) {
+					result.setProjectDescription(descLine);
+				} else {
+					result.setProjectDescription(result.getProjectDescription() + "\n" + descLine);
+				}
 				continue;
 			}
 
@@ -395,9 +443,13 @@ public class AIIndexTool extends SafeConfig {
 		// Write project name
 		sb.append("# ").append(content.getProjectName()).append("\n\n");
 
-		// Write project description
+		// Write project description as a properly formatted blockquote
+		// Each line must start with "> " for parser compatibility
 		if (!content.getProjectDescription().isEmpty()) {
-			sb.append("> ").append(content.getProjectDescription()).append("\n");
+			String[] descriptionLines = content.getProjectDescription().split("\n");
+			for (String line : descriptionLines) {
+				sb.append("> ").append(line.trim()).append("\n");
+			}
 		}
 
 		// Write sections
