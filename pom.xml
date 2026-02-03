@@ -101,6 +101,17 @@
 			<artifactId>webp-imageio</artifactId>
 			<version>0.2.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-filtering</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<version>3.9.6</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
