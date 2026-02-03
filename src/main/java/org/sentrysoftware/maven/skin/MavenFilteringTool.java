@@ -20,17 +20,20 @@ package org.sentrysoftware.maven.skin;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.SafeConfig;
 import org.apache.velocity.tools.generic.ValueParser;
 import org.codehaus.plexus.interpolation.InterpolatorFilterReader;
+import org.codehaus.plexus.interpolation.MapBasedValueSource;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
 import org.codehaus.plexus.interpolation.ValueSource;
@@ -59,8 +62,7 @@ import org.codehaus.plexus.interpolation.ValueSource;
 @DefaultKey("mavenFilteringTool")
 public class MavenFilteringTool extends SafeConfig {
 
-	private MavenProject mavenProject;
-	private MavenSession mavenSession;
+	private Object projectObject; // Can be MavenProject or any object with getters
 	private Properties additionalProperties;
 
 	/**
@@ -88,25 +90,103 @@ public class MavenFilteringTool extends SafeConfig {
 		ToolContext context = (ToolContext) velocityContext;
 
 		// Get the Maven project object from context
-		Object projectObj = context.get("project");
-		if (projectObj instanceof MavenProject) {
-			mavenProject = (MavenProject) projectObj;
-		}
-
-		// Get the Maven session from context (if available)
-		Object sessionObj = context.get("session");
-		if (sessionObj instanceof MavenSession) {
-			mavenSession = (MavenSession) sessionObj;
-		}
+		// Store as Object to support both real MavenProject and mock objects
+		projectObject = context.get("project");
 
 		// Get additional properties from context
 		additionalProperties = new Properties();
 		Object propertiesObj = context.get("properties");
-		if (propertiesObj instanceof java.util.Map) {
+		if (propertiesObj instanceof Map) {
 			@SuppressWarnings("unchecked")
-			java.util.Map<String, String> propsMap = (java.util.Map<String, String>) propertiesObj;
+			Map<String, String> propsMap = (Map<String, String>) propertiesObj;
 			additionalProperties.putAll(propsMap);
 		}
+	}
+
+	/**
+	 * Extracts properties from an object using reflection.
+	 * <p>
+	 * This method creates a map of properties from an object by introspecting its
+	 * getter methods. Property keys are prefixed with "project." and "pom." for
+	 * Maven project objects.
+	 * </p>
+	 *
+	 * @param obj
+	 *        The object to extract properties from (typically a MavenProject)
+	 * @return Map of properties with prefixed keys
+	 */
+	private Map<String, String> extractProperties(final Object obj) {
+		Map<String, String> map = new HashMap<>();
+
+		if (obj == null) {
+			return map;
+		}
+
+		// Get all public methods
+		Method[] methods = obj.getClass().getMethods();
+
+		for (Method method : methods) {
+			String methodName = method.getName();
+
+			// Look for getter methods
+			if ((methodName.startsWith("get") || methodName.startsWith("is"))
+					&& method.getParameterCount() == 0
+					&& !method.getReturnType().equals(Void.TYPE)) {
+
+				try {
+					Object value = method.invoke(obj);
+
+					// Only add non-null string or primitive values
+					if (value != null && (value instanceof String || isPrimitive(value.getClass()))) {
+						String propertyName;
+
+						if (methodName.startsWith("get")) {
+							propertyName = methodName.substring(3);
+						} else {
+							propertyName = methodName.substring(2);
+						}
+
+						// Convert to lowercase first character (JavaBean convention)
+						if (propertyName.length() > 0) {
+							propertyName = Character.toLowerCase(propertyName.charAt(0))
+									+ propertyName.substring(1);
+						}
+
+						String stringValue = value.toString();
+
+						// Add with project. prefix
+						map.put("project." + propertyName, stringValue);
+
+						// Also add with pom. prefix for compatibility
+						map.put("pom." + propertyName, stringValue);
+					}
+				} catch (IllegalAccessException | java.lang.reflect.InvocationTargetException e) { // NOPMD
+					// Ignore methods that can't be invoked
+					// This is expected for methods that require parameters
+				}
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * Checks if a class is a primitive type or wrapper.
+	 *
+	 * @param clazz
+	 *        The class to check
+	 * @return true if primitive or wrapper
+	 */
+	private boolean isPrimitive(final Class<?> clazz) {
+		return clazz.isPrimitive()
+				|| clazz.equals(Boolean.class)
+				|| clazz.equals(Integer.class)
+				|| clazz.equals(Long.class)
+				|| clazz.equals(Double.class)
+				|| clazz.equals(Float.class)
+				|| clazz.equals(Short.class)
+				|| clazz.equals(Byte.class)
+				|| clazz.equals(Character.class);
 	}
 
 	/**
@@ -134,20 +214,19 @@ public class MavenFilteringTool extends SafeConfig {
 		}
 
 		// Add Maven project properties
-		if (mavenProject != null) {
-			valueSources.add(new PropertiesBasedValueSource(mavenProject.getProperties()));
-			valueSources
-					.add(
-							new org.codehaus.plexus.interpolation.PrefixedObjectValueSource(
-									java.util.Collections.singletonList("project"),
-									mavenProject,
-									true));
-			valueSources
-					.add(
-							new org.codehaus.plexus.interpolation.PrefixedObjectValueSource(
-									java.util.Collections.singletonList("pom"),
-									mavenProject,
-									true));
+		if (projectObject != null) {
+			// Try to get properties if it's a real MavenProject
+			if (projectObject instanceof MavenProject) {
+				MavenProject mp = (MavenProject) projectObject;
+				valueSources.add(new PropertiesBasedValueSource(mp.getProperties()));
+			}
+
+			// Extract project properties using reflection
+			// This approach works reliably with both real and mock Maven projects
+			Map<String, String> projectMap = extractProperties(projectObject);
+			if (!projectMap.isEmpty()) {
+				valueSources.add(new MapBasedValueSource(projectMap));
+			}
 		}
 
 		// Add system properties
@@ -155,7 +234,7 @@ public class MavenFilteringTool extends SafeConfig {
 
 		// Add environment variables with env. prefix
 		Properties envProperties = new Properties();
-		for (java.util.Map.Entry<String, String> entry : System.getenv().entrySet()) {
+		for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
 			envProperties.setProperty("env." + entry.getKey(), entry.getValue());
 		}
 		valueSources.add(new PropertiesBasedValueSource(envProperties));
