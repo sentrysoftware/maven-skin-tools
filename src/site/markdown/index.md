@@ -50,7 +50,7 @@ This allows the Maven Skin and [Velocity-processed pages in a Maven Site](https:
 The above tools are designed to be used only in the Velocity template of a [Maven Site Skin](https://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html) as in the example below:
 
 #[[
-```html
+```velocity
 #set($bodyElement = $htmlTool.parseContent($bodyContent))
 #set($bodyElement = $imageTool.explicitImageSize($bodyElement, "img", ${project.reporting.outputDirectory}, $currentFileName))
 <html>
@@ -66,7 +66,7 @@ $bodyElement.html()
 The `ConfigTool` provides unified configuration management, merging site-wide settings from `site.xml` with per-page overrides from Markdown front matter:
 
 #[[
-```html
+```velocity
 <!-- In your Velocity skin template -->
 #set($interpolation = $configTool.getValue($site, $headContent, "interpolation", "maven"))
 #set($showToc = $configTool.getBooleanValue($site, $headContent, "showToc", true))
@@ -124,7 +124,7 @@ Additionally, we allow the use of these standard Velocity tools in the Velocity-
 Example:
 
 #[[
-```sh
+```velocity
 #set( $repoList = $json.fetch("https://api.github.com/orgs/sentrysoftware/repos") )
 #if( $repoList && $repoList.size() > 0 )
 | Repository | Description |
