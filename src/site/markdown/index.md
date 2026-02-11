@@ -41,6 +41,7 @@ This allows the Maven Skin and [Velocity-processed pages in a Maven Site](https:
 
 | Tool | Description | Javadoc |
 |---|---|---|
+| `#[[$configTool]]#` | To manage site configuration with front matter overrides | [ConfigTool](apidocs/org/sentrysoftware/maven/skin/ConfigTool.html) |
 | `#[[$htmlTool]]#` | To manipulate HTML documents or fragments | [HtmlTool](apidocs/org/sentrysoftware/maven/skin/HtmlTool.html) |
 | `#[[$imageTool]]#` | To manipulate images | [ImageTool](apidocs/org/sentrysoftware/maven/skin/ImageTool.html) |
 | `#[[$indexTool]]#` | To create search indexes | [IndexTool](apidocs/org/sentrysoftware/maven/skin/IndexTool.html) |
@@ -57,6 +58,58 @@ The above tools are designed to be used only in the Velocity template of a [Mave
 $bodyElement.html()
 </body>
 </html>
+```
+]]#
+
+## ConfigTool Usage
+
+The `ConfigTool` provides unified configuration management, merging site-wide settings from `site.xml` with per-page overrides from Markdown front matter:
+
+#[[
+```html
+<!-- In your Velocity skin template -->
+#set($interpolation = $configTool.getValue($site, $headContent, "interpolation", "maven"))
+#set($showToc = $configTool.getBooleanValue($site, $headContent, "showToc", true))
+#set($tocMaxDepth = $configTool.getIntValue($site, $headContent, "tocMaxDepth", 3))
+
+#if($showToc)
+  <!-- Render table of contents with max depth $tocMaxDepth -->
+#end
+```
+]]#
+
+Configuration precedence (highest to lowest):
+1. **Front matter** in Markdown files (converted to `<meta>` tags by Doxia)
+2. **Site-wide configuration** in `site.xml` under `<custom>` element
+3. **Default value** specified in the method call
+
+Example front matter in a Markdown page:
+
+#[[
+```markdown
+---
+interpolation: none
+showToc: false
+tocMaxDepth: 2
+---
+
+# My Page Title
+
+Content goes here...
+```
+]]#
+
+Example site-wide configuration in `site.xml`:
+
+#[[
+```xml
+<project>
+  <custom>
+    <interpolation>maven</interpolation>
+    <showToc>true</showToc>
+    <tocMaxDepth>3</tocMaxDepth>
+  </custom>
+</project>
 ```
 ]]#
 
