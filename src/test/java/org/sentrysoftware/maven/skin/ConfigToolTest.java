@@ -275,20 +275,32 @@ class ConfigToolTest {
 
 	@Test
 	void testCaching() {
-		// Test that parsing result is cached
-		String headContent = "<meta name=\"test\" content=\"value\"/>";
+		// Test that parsing result is cached and reused
+		String headContent1 = "<meta name=\"test\" content=\"value\"/>";
+		String headContent2 = "<meta name=\"other\" content=\"otherValue\"/>";
 
-		// First call should parse
-		String result1 = configTool.getValue(null, headContent, "test", "default");
+		// Cache should be empty initially
+		assertEquals(0, configTool.getCacheSize());
+
+		// First call should parse and cache
+		String result1 = configTool.getValue(null, headContent1, "test", "default");
 		assertEquals("value", result1);
+		assertEquals(1, configTool.getCacheSize());
 
-		// Second call with same headContent should use cache
-		String result2 = configTool.getValue(null, headContent, "test", "default");
+		// Second call with same headContent should use cache (size unchanged)
+		String result2 = configTool.getValue(null, headContent1, "test", "default");
 		assertEquals("value", result2);
+		assertEquals(1, configTool.getCacheSize());
 
 		// Call with different key but same headContent should also use cache
-		String result3 = configTool.getValue(null, headContent, "other", "default");
+		String result3 = configTool.getValue(null, headContent1, "other", "default");
 		assertEquals("default", result3);
+		assertEquals(1, configTool.getCacheSize());
+
+		// Call with different headContent should add a new cache entry
+		String result4 = configTool.getValue(null, headContent2, "other", "default");
+		assertEquals("otherValue", result4);
+		assertEquals(2, configTool.getCacheSize());
 	}
 
 	@Test

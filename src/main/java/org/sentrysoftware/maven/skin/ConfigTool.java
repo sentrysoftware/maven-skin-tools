@@ -20,10 +20,10 @@ package org.sentrysoftware.maven.skin;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
-import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.WeakHashMap;
 
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.SafeConfig;
@@ -69,9 +69,10 @@ public class ConfigTool extends SafeConfig {
 
 	/**
 	 * Cache for parsed head content to avoid re-parsing the same content multiple times.
-	 * Uses weak references to allow garbage collection when memory is needed.
+	 * Uses a WeakHashMap so entries can be garbage collected when headContent strings are no longer referenced.
+	 * Wrapped with synchronizedMap for thread safety since ConfigTool is in application scope.
 	 */
-	private final Map<Integer, WeakReference<Map<String, String>>> metaCache = new HashMap<>();
+	private final Map<String, Map<String, String>> metaCache = Collections.synchronizedMap(new WeakHashMap<>());
 
 	/**
 	 * Creates a new instance of ConfigTool.
@@ -203,36 +204,10 @@ public class ConfigTool extends SafeConfig {
 			return null;
 		}
 
-		// Check cache first
-		int cacheKey = Objects.hash(headContent);
-		Map<String, String> metaMap = getCachedMetaMap(cacheKey);
-
-		if (metaMap == null) {
-			// Parse and cache
-			metaMap = parseMetaTags(headContent);
-			metaCache.put(cacheKey, new WeakReference<>(metaMap));
-		}
+		// Get from cache or parse and cache
+		Map<String, String> metaMap = metaCache.computeIfAbsent(headContent, this::parseMetaTags);
 
 		return metaMap.get(key);
-	}
-
-	/**
-	 * Get cached meta map from weak reference.
-	 *
-	 * @param cacheKey The cache key
-	 * @return The cached map or null if not in cache or garbage collected
-	 */
-	private Map<String, String> getCachedMetaMap(final int cacheKey) {
-		WeakReference<Map<String, String>> ref = metaCache.get(cacheKey);
-		if (ref != null) {
-			Map<String, String> map = ref.get();
-			if (map != null) {
-				return map;
-			}
-			// Reference was cleared, remove stale entry
-			metaCache.remove(cacheKey);
-		}
-		return null;
 	}
 
 	/**
@@ -321,5 +296,15 @@ public class ConfigTool extends SafeConfig {
 		default:
 			return defaultValue;
 		}
+	}
+
+	/**
+	 * Returns the current size of the meta cache.
+	 * This method is package-private for testing purposes only.
+	 *
+	 * @return The number of entries in the meta cache
+	 */
+	int getCacheSize() {
+		return metaCache.size();
 	}
 }
