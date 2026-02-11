@@ -20,10 +20,15 @@ package org.sentrysoftware.maven.skin;
  * ╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱
  */
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.SafeConfig;
@@ -68,11 +73,25 @@ import org.jsoup.select.Elements;
 public class ConfigTool extends SafeConfig {
 
 	/**
+	 * Logger for this class.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ConfigTool.class.getName());
+
+	/**
 	 * Cache for parsed head content to avoid re-parsing the same content multiple times.
 	 * Uses a WeakHashMap so entries can be garbage collected when headContent strings are no longer referenced.
 	 * Wrapped with synchronizedMap for thread safety since ConfigTool is in application scope.
+	 * Note: Failed parses are not cached to allow retry on subsequent calls.
 	 */
 	private final Map<String, Map<String, String>> metaCache = Collections.synchronizedMap(new WeakHashMap<>());
+
+	/**
+	 * Cache for resolved getCustomValue Method per siteModel class.
+	 * Uses Optional to distinguish between "not yet looked up" (absent from map) and
+	 * "looked up but not found" (Optional.empty() in map).
+	 * ConcurrentHashMap for thread safety.
+	 */
+	private final Map<Class<?>, Optional<Method>> methodCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Creates a new instance of ConfigTool.
@@ -204,19 +223,28 @@ public class ConfigTool extends SafeConfig {
 			return null;
 		}
 
-		// Get from cache or parse and cache
-		Map<String, String> metaMap = metaCache.computeIfAbsent(headContent, this::parseMetaTags);
+		// Check cache first
+		Map<String, String> metaMap = metaCache.get(headContent);
+		if (metaMap != null) {
+			return metaMap.get(key);
+		}
 
-		return metaMap.get(key);
+		// Parse and cache only on success
+		metaMap = parseMetaTags(headContent);
+		if (metaMap != null) {
+			metaCache.put(headContent, metaMap);
+			return metaMap.get(key);
+		}
+
+		return null;
 	}
 
 	/**
 	 * Parse all meta tags from head content into a map.
 	 *
 	 * @param headContent The HTML head content
-	 * @return Map of meta name to content value
+	 * @return Map of meta name to content value, or null if parsing fails
 	 */
-	@SuppressWarnings("PMD.EmptyCatchBlock")
 	private Map<String, String> parseMetaTags(final String headContent) {
 
 		Map<String, String> metaMap = new HashMap<>();
@@ -233,7 +261,12 @@ public class ConfigTool extends SafeConfig {
 				}
 			}
 		} catch (Exception e) {
-			// Return empty map on parsing error
+			LOGGER
+					.log(
+							Level.WARNING,
+							"Failed to parse head content for meta tags, will retry on next access",
+							e);
+			return null;
 		}
 
 		return metaMap;
@@ -246,23 +279,54 @@ public class ConfigTool extends SafeConfig {
 	 * @param key The custom value key
 	 * @return The custom value, or null if not found or error
 	 */
-	@SuppressWarnings("PMD.EmptyCatchBlock")
 	private String getSiteCustomValue(final Object siteModel, final String key) {
 
 		if (siteModel == null) {
 			return null;
 		}
 
+		Class<?> siteModelClass = siteModel.getClass();
+
+		// Get cached method lookup result, or perform lookup
+		Optional<Method> cachedMethod = methodCache.computeIfAbsent(siteModelClass, clazz -> {
+			try {
+				// Try to find getCustomValue(String) method
+				// This works with both Maven Site Plugin 3.x (DecorationModel) and 4.x (SiteModel)
+				return Optional.of(clazz.getMethod("getCustomValue", String.class));
+			} catch (NoSuchMethodException e) {
+				LOGGER
+						.log(
+								Level.FINE,
+								String
+										.format(
+												"Site model class %s does not have getCustomValue(String) method, "
+														+ "configuration will fall back to defaults",
+												clazz.getName()));
+				return Optional.empty();
+			}
+		});
+
+		// If method was not found, return null
+		if (cachedMethod.isEmpty()) {
+			return null;
+		}
+
+		// Invoke the cached method
 		try {
-			// Try to call getCustomValue(String) using reflection
-			// This works with both Maven Site Plugin 3.x (DecorationModel) and 4.x (SiteModel)
-			java.lang.reflect.Method method = siteModel.getClass().getMethod("getCustomValue", String.class);
-			Object result = method.invoke(siteModel, key);
+			Object result = cachedMethod.get().invoke(siteModel, key);
 			if (result instanceof String) {
 				return (String) result;
 			}
 		} catch (ReflectiveOperationException e) {
-			// Method not found or invocation failed - return null
+			LOGGER
+					.log(
+							Level.WARNING,
+							String
+									.format(
+											"Failed to invoke getCustomValue('%s') on site model of type %s",
+											key,
+											siteModelClass.getName()),
+							e);
 		}
 
 		return null;
