@@ -22,6 +22,10 @@
 This artifact contains a collection of Velocity tools that are used by the
 [Sentry Maven Skin](https://sentrysoftware/github.io/maven-skin).
 
+## Requirements
+
+Maven must run on JDK 17 or later to use Maven Skin Tools.
+
 This artifact must be loaded as a dependency by the Maven Site plugin, as below:
 
 ```xml
