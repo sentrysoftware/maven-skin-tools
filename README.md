@@ -7,6 +7,10 @@
 
 Velocity Tools used by the [Sentry Maven Skin](https://sentrysoftware.github.io/maven-skin).
 
+## Requirements
+
+Maven must run on JDK 17 or later to use Maven Skin Tools.
+
 ## Documentation
 
 Visit the [Maven Skin Tools Documentation Site](https://sentrysoftware.github.io/maven-skin-tools).
