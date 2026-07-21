@@ -224,6 +224,13 @@ class HtmlToMarkdownConverterTest {
 				HtmlToMarkdownConverter
 						.convert(
 								"<div class='callout callout-caution'><p>Caution content.</p></div>"));
+
+		String nestedCallout = "<div class='callout callout-warning'><p>Outer content.</p>" +
+				"<div class='callout callout-tip'><div class='callout-title'>Tip</div>" +
+				"<p>Inner content.</p></div></div>";
+		String nestedResult = HtmlToMarkdownConverter.convert(nestedCallout);
+		assertTrue(nestedResult.startsWith("> **Warning**"));
+		assertTrue(nestedResult.contains("> > **Tip**"));
 	}
 
 	@Test
@@ -373,6 +380,10 @@ class HtmlToMarkdownConverterTest {
 				"<table><tr><th>Example</th></tr>" +
 				"<tr><td>key=\u201cvalue\u201d</td></tr>" +
 				"<tr><td>Equation x = \u201cunknown\u201d.</td></tr></table>" +
+				"<table><tr><th>Mixed content</th></tr>" +
+				"<tr><td>Use <code>foo</code>, called \u201cbar\u201d.</td></tr>" +
+				"<tr><td>Path \\server, called \u201cbaz\u201d.</td></tr>" +
+				"<tr><td>Use key=\u201cvalue\u201d, called \u201cqux\u201d.</td></tr></table>" +
 				"<p><code>key=\u201cvalue\u201d</code></p>" +
 				"<pre><code>key=\u201cvalue\u201d</code></pre>";
 
@@ -382,6 +393,9 @@ class HtmlToMarkdownConverterTest {
 		assertTrue(result.contains("She said \u201chello\u201d."));
 		assertTrue(result.contains("| key=\"value\" |"));
 		assertTrue(result.contains("Equation x = \u201cunknown\u201d."));
+		assertTrue(result.contains("Use `foo`, called \u201cbar\u201d."));
+		assertTrue(result.contains("Path \\server, called \u201cbaz\u201d."));
+		assertTrue(result.contains("Use key=\"value\", called \u201cqux\u201d."));
 		assertTrue(result.contains("`key=\"value\"`"));
 		assertTrue(result.contains("```\nkey=\"value\"\n```"));
 	}

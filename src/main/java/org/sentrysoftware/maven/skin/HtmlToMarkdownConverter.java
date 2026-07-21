@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,6 +44,9 @@ import org.jsoup.nodes.TextNode;
  * </p>
  */
 public final class HtmlToMarkdownConverter {
+	private static final Pattern TECHNICAL_QUOTED_VALUE = Pattern
+			.compile(
+					"([\\p{Alnum}_.:-]+=)([\\u2018\\u2019\\u201c\\u201d])([^\\u2018\\u2019\\u201c\\u201d]*)([\\u2018\\u2019\\u201c\\u201d])");
 
 	/**
 	 * Private constructor to prevent instantiation.
@@ -457,7 +462,7 @@ public final class HtmlToMarkdownConverter {
 		ensureBlankLine(result);
 
 		Element calloutContent = element.clone();
-		Element title = calloutContent.selectFirst(".callout-title");
+		Element title = directCalloutTitle(calloutContent);
 		String label = title == null ? "" : markdownVisibleText(title);
 		if (title != null) {
 			title.remove();
@@ -470,6 +475,18 @@ public final class HtmlToMarkdownConverter {
 		quoteContent.append("**").append(label).append("**\n\n");
 		processElement(calloutContent, quoteContent, state);
 		appendBlockquote(quoteContent.toString(), result);
+	}
+
+	/**
+	 * Finds the title that belongs directly to a callout, excluding nested callout titles.
+	 */
+	private static Element directCalloutTitle(final Element callout) {
+		for (Element child : callout.children()) {
+			if (child.hasClass("callout-title")) {
+				return child;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -556,9 +573,7 @@ public final class HtmlToMarkdownConverter {
 			StringBuilder cellContent = new StringBuilder();
 			processElement(cell, cellContent, state);
 			String content = cellContent.toString().trim().replaceAll("\\s+", " ");
-			if (isTechnicalTableCell(cell, content)) {
-				content = normalizeTypographicQuotes(content);
-			}
+			content = normalizeTechnicalAssignments(content);
 			content = escapeTablePipes(content);
 			result.append(" ").append(content).append(" |");
 			cellCount++;
@@ -629,12 +644,20 @@ public final class HtmlToMarkdownConverter {
 	}
 
 	/**
-	 * Checks whether a table cell contains code markup or syntax that must retain ASCII quotes.
+	 * Normalizes typographic quotes only within compact technical assignments such as
+	 * {@code key=“value”}, preserving typographic quotes in surrounding prose.
 	 */
-	private static boolean isTechnicalTableCell(final Element cell, final String content) {
-		return cell.selectFirst("code, pre, kbd, samp") != null
-				|| content.indexOf('\\') >= 0
-				|| content.matches(".*[\\p{Alnum}_.:-]+=[\\u2018\\u2019\\u201c\\u201d].*");
+	private static String normalizeTechnicalAssignments(final String content) {
+		Matcher matcher = TECHNICAL_QUOTED_VALUE.matcher(content);
+		StringBuffer normalized = new StringBuffer(content.length());
+		while (matcher.find()) {
+			char openingQuote = matcher.group(2).charAt(0);
+			String quote = openingQuote == '\u201c' || openingQuote == '\u201d' ? "\"" : "'";
+			String replacement = matcher.group(1) + quote + matcher.group(3) + quote;
+			matcher.appendReplacement(normalized, Matcher.quoteReplacement(replacement));
+		}
+		matcher.appendTail(normalized);
+		return normalized.toString();
 	}
 
 	/**
