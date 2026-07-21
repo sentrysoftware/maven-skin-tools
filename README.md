@@ -15,6 +15,12 @@ Maven must run on JDK 17 or later to use Maven Skin Tools.
 
 Visit the [Maven Skin Tools Documentation Site](https://sentrysoftware.github.io/maven-skin-tools).
 
+## AI-ready Markdown export
+
+`HtmlToMarkdownConverter` produces machine-readable Markdown for `.html.md` documentation exports. It linearizes
+interactive tabs, preserves callouts as blockquotes, keeps table pipes and technical quotes intact, aligns table of
+contents links with Markdown heading anchors, and omits print-only link footnotes.
+
 ## Contributing
 
 A few rules:

@@ -21,6 +21,7 @@ package org.sentrysoftware.maven.skin;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.jsoup.nodes.Element;
@@ -196,5 +197,224 @@ class HtmlToMarkdownConverterTest {
 		assertTrue(result.contains("*italic*"));
 		assertTrue(result.contains("- Item 1"));
 		assertTrue(result.contains("[this link](http://example.com)"));
+	}
+
+	@Test
+	void testIssue115AllCalloutTypesUseBalancedMarkdown() {
+		String[] labels = { "Note", "Tip", "Important", "Warning", "Caution" };
+
+		for (String label : labels) {
+			String html = "<div class='callout callout-" + label.toLowerCase() + "'>" +
+					"<div class='callout-title'><i class='fa-solid fa-icon'></i> " + label + "</div>" +
+					"<p><code>expectedResult</code> only needs to match one line.</p></div>";
+
+			assertEquals(
+					"> **" + label + "**\n>\n> `expectedResult` only needs to match one line.",
+					HtmlToMarkdownConverter.convert(html));
+		}
+
+		assertEquals(
+				"> **Warning**\n>\n> Warning content.",
+				HtmlToMarkdownConverter
+						.convert(
+								"<div class='callout callout-warning'><div class='callout-title'>" +
+										"<i class='fa-solid fa-icon'></i></div><p>Warning content.</p></div>"));
+		assertEquals(
+				"> **Caution**\n>\n> Caution content.",
+				HtmlToMarkdownConverter
+						.convert(
+								"<div class='callout callout-caution'><p>Caution content.</p></div>"));
+
+		String nestedCallout = "<div class='callout callout-warning'><p>Outer content.</p>" +
+				"<div class='callout callout-tip'><div class='callout-title'>Tip</div>" +
+				"<p>Inner content.</p></div></div>";
+		String nestedResult = HtmlToMarkdownConverter.convert(nestedCallout);
+		assertTrue(nestedResult.startsWith("> **Warning**"));
+		assertTrue(nestedResult.contains("> > **Tip**"));
+	}
+
+	@Test
+	void testIssue115EmptyInlineIconsDoNotEmitMarkdownDelimiters() {
+		String html = "<p>Before <i class='fa-solid fa-triangle-exclamation'></i> after</p>";
+
+		assertEquals("Before after", HtmlToMarkdownConverter.convert(html));
+		assertEquals("Before after", HtmlToMarkdownConverter.convert("<p>Before<i> </i>after</p>"));
+	}
+
+	@Test
+	void testIssue116TabsUseOneCleanHeading() {
+		String html = "<uib-tabset><uib-tab>" +
+				"<uib-tab-heading><span class='fa-solid fa-table-list'></span> Input</uib-tab-heading>" +
+				"<p class='sentry-print-tab-heading'><strong>" +
+				"<span class='fa-solid fa-table-list'></span> Input</strong></p>" +
+				"<table><tr><th>col</th></tr><tr><td>value</td></tr></table>" +
+				"</uib-tab></uib-tabset>";
+
+		assertEquals(
+				"#### Input\n\n| col |\n| --- |\n| value |",
+				HtmlToMarkdownConverter.convert(html));
+	}
+
+	@Test
+	void testIssue117TocLinksUseMarkdownHeadingSlugs() {
+		String longHeading = "Step 2 - Create the connector directory and YAML file";
+		String html = "<ul id='toc'>" +
+				"<li><a href='#ordering-strategy-28cheap-to-expensive-29'>" +
+				"Ordering strategy (cheap to expensive)" +
+				"<sup class='visible-print-inline'>[7]</sup></a></li>" +
+				"<li><a href='#multiinstance-3a-one-run-for-all-instances'>" +
+				"MultiInstance: one run for all instances</a></li>" +
+				"<li><a href='#a1-prepare-it-resources-structure'>1. Prepare IT resources structure</a></li>" +
+				"<li><a href='#step-2---create-the-connector-directory-and-yaml-file'>" + longHeading + "</a></li>" +
+				"<li><a href='#hw-e2-80-94-hardware'>HW \u2014 Hardware</a></li>" +
+				"</ul>" +
+				"<a id='ordering-strategy-28cheap-to-expensive-29'></a>" +
+				"<h2 id='ordering-strategy-cheap-to-expensive'>" +
+				"<a href='#ordering-strategy-cheap-to-expensive'>Ordering strategy (cheap to expensive)</a></h2>" +
+				"<h2 id='multiinstance-one-run-for-all-instances'>" +
+				"<a href='#multiinstance-one-run-for-all-instances'>" +
+				"MultiInstance: one run for all instances</a></h2>" +
+				"<h2 id='a1-prepare-it-resources-structure'>" +
+				"<a href='#a1-prepare-it-resources-structure'>1. Prepare IT resources structure</a></h2>" +
+				"<h2 id='step-2---create-the-connector-directory-and-yaml-f'>" +
+				"<a href='#step-2---create-the-connector-directory-and-yaml-f'>" + longHeading + "</a></h2>" +
+				"<h2 id='hw--hardware'><a href='#hw--hardware'>HW \u2014 Hardware</a></h2>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("[Ordering strategy (cheap to expensive)](#ordering-strategy-cheap-to-expensive)"));
+		assertTrue(
+				result
+						.contains(
+								"[MultiInstance: one run for all instances](#multiinstance-one-run-for-all-instances)"));
+		assertTrue(result.contains("[1. Prepare IT resources structure](#1-prepare-it-resources-structure)"));
+		assertTrue(result.contains("[" + longHeading + "](#step-2---create-the-connector-directory-and-yaml-file)"));
+		assertTrue(result.contains("[HW \u2014 Hardware](#hw--hardware)"));
+		assertTrue(result.contains("## Ordering strategy (cheap to expensive)"));
+		assertFalse(result.contains("#ordering-strategy-28cheap-to-expensive-29"));
+		assertFalse(result.contains("[7]"));
+		assertFalse(result.contains("#multiinstance-3a-one-run-for-all-instances"));
+		assertFalse(result.contains("#a1-prepare-it-resources-structure"));
+		assertFalse(result.contains("#step-2---create-the-connector-directory-and-yaml-f)"));
+	}
+
+	@Test
+	void testIssue117DuplicateHeadingSlugsUseMarkdownSuffixes() {
+		String html = "<ul id='toc'><li><a href='#syntax'>Syntax</a></li>" +
+				"<li><a href='#syntax-1'>Syntax</a></li></ul>" +
+				"<h3 id='syntax'><a href='#syntax'>Syntax</a></h3>" +
+				"<a id='syntax-1'></a><h3 id='syntax_2'><a href='#syntax_2'>Syntax</a></h3>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("[Syntax](#syntax)"));
+		assertTrue(result.contains("[Syntax](#syntax-1)"));
+		assertFalse(result.contains("#syntax_2"));
+	}
+
+	@Test
+	void testIssue117SlugMapMatchesOnlyRenderedHeadings() {
+		String html = "<ul id='toc'>" +
+				"<li><a href='#overview-heading'>Overview</a></li>" +
+				"<li><a href='#title-heading'>Title</a></li>" +
+				"<li><a href='#syntax-literal'>Syntax-1</a></li></ul>" +
+				"<uib-tab-heading>Overview</uib-tab-heading>" +
+				"<h2 id='overview-heading'><a href='#overview-heading'>Overview" +
+				"<sup class='visible-print-inline'>[9]</sup></a></h2>" +
+				"<table><tr><td><h2>Title</h2></td></tr></table>" +
+				"<h2 id='title-heading'>Title</h2>" +
+				"<h2>Syntax</h2><h2>Syntax</h2>" +
+				"<h2 id='syntax-literal'>Syntax-1</h2>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("[Overview](#overview-1)"));
+		assertTrue(result.contains("[Title](#title)"));
+		assertTrue(result.contains("[Syntax-1](#syntax-1-1)"));
+		assertFalse(result.contains("#overview-9"));
+	}
+
+	@Test
+	void testIssue117TextFallbackDoesNotRewriteOrdinaryLinks() {
+		String html = "<p><a href='#custom-anchor'>Overview</a></p>" +
+				"<div id='custom-anchor'>Custom target</div><h2 id='overview'>Overview</h2>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("[Overview](#custom-anchor)"));
+		assertFalse(result.contains("[Overview](#overview)"));
+	}
+
+	@Test
+	void testIssue117HeadingCrossReferenceIsNotMistakenForSelfLink() {
+		String html = "<h2 id='current'><a href='#other'>See the other section</a></h2>" +
+				"<h2 id='other'>Other section</h2>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("## [See the other section](#other-section)"));
+	}
+
+	@Test
+	void testIssue118TablePreservesEntityAndBackslashEscapedPipes() {
+		String html = "<table><tr><th>Entity</th><th>Backslash</th></tr>" +
+				"<tr><td>Model&#124;Size</td><td>2\\|11</td></tr>" +
+				"<tr><td>ST4000NM&#124;4000</td><td>value</td></tr></table>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertEquals(
+				"| Entity | Backslash |\n" +
+						"| --- | --- |\n" +
+						"| Model\\|Size | 2\\|11 |\n" +
+						"| ST4000NM\\|4000 | value |",
+				result);
+	}
+
+	@Test
+	void testIssue119TableRestoresStraightQuotesInTechnicalContent() {
+		String html = "<table><tr><th>Path</th></tr><tr>" +
+				"<td>\\\\SRV01\\root\\cimv2:Win32_Account.Domain=\u201cCONTOSO\u201d," +
+				"Name=\u201cjsmith\u201d</td></tr>" +
+				"<tr><td>She said \u201chello\u201d.</td></tr></table>" +
+				"<table><tr><th>Example</th></tr>" +
+				"<tr><td>key=\u201cvalue\u201d</td></tr>" +
+				"<tr><td>Equation x = \u201cunknown\u201d.</td></tr></table>" +
+				"<table><tr><th>Mixed content</th></tr>" +
+				"<tr><td>Use <code>foo</code>, called \u201cbar\u201d.</td></tr>" +
+				"<tr><td>Path \\server, called \u201cbaz\u201d.</td></tr>" +
+				"<tr><td>Use key=\u201cvalue\u201d, called \u201cqux\u201d.</td></tr></table>" +
+				"<p><code>key=\u201cvalue\u201d</code></p>" +
+				"<pre><code>key=\u201cvalue\u201d</code></pre>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("Domain=\"CONTOSO\",Name=\"jsmith\""));
+		assertTrue(result.contains("She said \u201chello\u201d."));
+		assertTrue(result.contains("| key=\"value\" |"));
+		assertTrue(result.contains("Equation x = \u201cunknown\u201d."));
+		assertTrue(result.contains("Use `foo`, called \u201cbar\u201d."));
+		assertTrue(result.contains("Path \\server, called \u201cbaz\u201d."));
+		assertTrue(result.contains("Use key=\"value\", called \u201cqux\u201d."));
+		assertTrue(result.contains("`key=\"value\"`"));
+		assertTrue(result.contains("```\nkey=\"value\"\n```"));
+	}
+
+	@Test
+	void testIssue120PrintOnlyLinkFootnotesAreIgnored() {
+		String html = "<p><a href='run-and-debug.html'>Run and Debug Locally</a>" +
+				"<sup class='visible-print-inline'>[1]</sup></p>" +
+				"<ul><li><a href='https://example.com/WBEMGenLUN.yaml'>WBEMGenLUN</a>" +
+				"<sup class='visible-print-inline'>[1]</sup></li>" +
+				"<li><a href='https://example.com/IpmiTool.yaml'>IpmiTool</a>" +
+				"<sup class='visible-print-inline'>[2]</sup></li></ul>";
+
+		String result = HtmlToMarkdownConverter.convert(html);
+
+		assertTrue(result.contains("[Run and Debug Locally](run-and-debug.html)"));
+		assertTrue(result.contains("[WBEMGenLUN](https://example.com/WBEMGenLUN.yaml)"));
+		assertTrue(result.contains("[IpmiTool](https://example.com/IpmiTool.yaml)"));
+		assertFalse(result.contains("[1]"));
+		assertFalse(result.contains("[2]"));
 	}
 }

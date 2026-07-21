@@ -51,6 +51,10 @@ This allows the Maven Skin and [Velocity-processed pages in a Maven Site](https:
 | `#[[$indexTool]]#` | To create search indexes | [IndexTool](apidocs/org/sentrysoftware/maven/skin/IndexTool.html) |
 | `#[[$aiIndexTool]]#` | To create AI-ready Markdown files from HTML documentation | [AIIndexTool](apidocs/org/sentrysoftware/maven/skin/AIIndexTool.html) |
 
+The AI-ready Markdown converter preserves the document's machine-readable structure. Sentry Maven Skin callouts
+remain blockquotes, interactive tabs become linear headings, table pipes and technical quotes remain literal data,
+table of contents links use the same anchors as Markdown headings, and print-only link footnotes are omitted.
+
 The above tools are designed to be used only in the Velocity template of a [Maven Site Skin](https://maven.apache.org/plugins/maven-site-plugin/examples/creatingskins.html) as in the example below:
 
 #[[
