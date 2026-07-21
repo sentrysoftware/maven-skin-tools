@@ -9,7 +9,7 @@
 
 	<groupId>org.sentrysoftware.maven</groupId>
 	<artifactId>maven-skin-tools</artifactId>
-	<version>1.8.01</version>
+	<version>2.0.00-SNAPSHOT</version>
 
 	<name>Sentry Maven Skin Tools</name>
 	<description>Tools and utilities used in Sentry's Maven Skin. It is based on the excellent Maven
@@ -41,7 +41,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/sentrysoftware/maven-skin-tools.git</connection>
 		<url>https://github.com/sentrysoftware/maven-skin-tools</url>
-		<tag>v1.8.01</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
@@ -62,7 +62,7 @@
 
 		<!-- Reproducible Build -->
 		<!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-		<project.build.outputTimestamp>2026-07-21T10:01:13Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2026-07-21T10:02:18Z</project.build.outputTimestamp>
 	</properties>
 
 	<dependencies>
